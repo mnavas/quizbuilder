@@ -1,0 +1,10 @@
+import TestForm from "@/components/TestForm";
+
+export default function NewTestPage() {
+  return (
+    <div>
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">New Test</h1>
+      <TestForm />
+    </div>
+  );
+}
