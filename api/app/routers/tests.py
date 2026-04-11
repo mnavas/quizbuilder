@@ -1,6 +1,7 @@
 import io
 import json
 import mimetypes
+import random
 import secrets
 import uuid
 import zipfile
@@ -21,6 +22,20 @@ from app.db import get_db
 from app.models.core import MediaFile, Question, Test, TestBlock, TestBlockQuestion, User
 
 router = APIRouter()
+
+# Unambiguous uppercase alphanumeric chars (no 0/O, 1/I/L)
+_CODE_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"
+
+
+async def _generate_short_code(db: AsyncSession) -> str:
+    """Generate a 6-char board-friendly code, retrying on collision."""
+    for length in (6, 7, 8):
+        for _ in range(20):
+            code = "".join(random.choices(_CODE_CHARS, k=length))
+            exists = (await db.execute(select(Test.id).where(Test.link_token == code))).scalar()
+            if not exists:
+                return code
+    return secrets.token_urlsafe(6)  # last resort
 
 
 # ── Schemas ──────────────────────────────────────────────────────────────────
@@ -364,7 +379,7 @@ async def publish_test(
     if not test.blocks or not any(b.block_questions for b in test.blocks):
         raise HTTPException(status_code=400, detail="Test must have at least one question before publishing")
     if not test.link_token:
-        test.link_token = secrets.token_urlsafe(24)
+        test.link_token = await _generate_short_code(db)
     test.published_at = datetime.now(timezone.utc)
     await db.commit()
     return _test_out(await _load_test(test_id, user.tenant_id, db))

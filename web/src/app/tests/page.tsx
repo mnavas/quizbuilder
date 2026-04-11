@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import QRCode from "qrcode";
 import { api } from "@/lib/api";
 import RichTextViewer, { tiptapToText } from "@/components/RichTextViewer";
 
@@ -194,6 +195,122 @@ function PreviewModal({ testId, onClose }: { testId: string; onClose: () => void
   );
 }
 
+// ── QR Modal ──────────────────────────────────────────────────────────────────
+
+function QrModal({ url, onClose }: { url: string; onClose: () => void }) {
+  const [dataUrl, setDataUrl] = useState("");
+  useEffect(() => {
+    QRCode.toDataURL(url, { width: 280, margin: 2, color: { dark: "#111827", light: "#ffffff" } })
+      .then(setDataUrl);
+  }, [url]);
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      onClick={onClose}>
+      <div className="bg-white rounded-2xl p-6 shadow-xl max-w-xs w-full text-center"
+        onClick={(e) => e.stopPropagation()}>
+        <p className="text-sm font-semibold text-gray-700 mb-3">Scan to open the test</p>
+        {dataUrl
+          ? <img src={dataUrl} alt="QR code" className="mx-auto rounded-lg" />
+          : <div className="w-[280px] h-[280px] mx-auto bg-gray-100 rounded-lg animate-pulse" />}
+        <p className="text-xs text-gray-400 mt-3 break-all font-mono">{url}</p>
+        <button onClick={onClose}
+          className="mt-4 w-full btn-ghost text-sm">Close</button>
+      </div>
+    </div>
+  );
+}
+
+// ── Share Panel ───────────────────────────────────────────────────────────────
+
+const LS_BASE_URL_KEY = "qb_base_url";
+
+function SharePanel({ token }: { token: string }) {
+  const defaultBase = typeof window !== "undefined" ? window.location.origin : "";
+  const [baseUrl, setBaseUrl] = useState(() => {
+    if (typeof window === "undefined") return defaultBase;
+    return localStorage.getItem(LS_BASE_URL_KEY) || defaultBase;
+  });
+  const [editingBase, setEditingBase] = useState(false);
+  const [draftBase, setDraftBase] = useState(baseUrl);
+  const [copied, setCopied] = useState(false);
+  const [showQr, setShowQr] = useState(false);
+
+  const fullUrl = `${baseUrl.replace(/\/$/, "")}/take/${token}`;
+  const joinUrl = `${baseUrl.replace(/\/$/, "")}/join`;
+
+  function saveBase() {
+    const trimmed = draftBase.trim().replace(/\/$/, "");
+    setBaseUrl(trimmed);
+    localStorage.setItem(LS_BASE_URL_KEY, trimmed);
+    setEditingBase(false);
+  }
+
+  function copyLink() {
+    navigator.clipboard.writeText(fullUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  return (
+    <div className="mt-2 pt-2 border-t border-gray-100 space-y-2">
+      {/* Board code */}
+      <div className="flex items-center gap-3">
+        <span className="text-xs text-gray-400 shrink-0">Code:</span>
+        <span className="font-mono text-xl font-bold tracking-widest text-amber-600 select-all">
+          {token}
+        </span>
+        <span className="text-xs text-gray-400">
+          — takers go to <span className="font-mono text-gray-600">{joinUrl}</span> and enter this code
+        </span>
+      </div>
+
+      {/* Full link row */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className="text-xs text-gray-400 shrink-0">Link:</span>
+        <span className="text-xs font-mono text-amber-600 break-all">{fullUrl}</span>
+      </div>
+
+      {/* Base URL editor */}
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-gray-400 shrink-0">Base URL:</span>
+        {editingBase ? (
+          <>
+            <input
+              value={draftBase}
+              onChange={(e) => setDraftBase(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") saveBase(); if (e.key === "Escape") setEditingBase(false); }}
+              className="text-xs font-mono border border-amber-300 rounded px-2 py-0.5 flex-1 min-w-0 focus:outline-none focus:ring-1 focus:ring-amber-400"
+              autoFocus
+            />
+            <button onClick={saveBase} className="text-xs text-green-600 hover:underline shrink-0">Save</button>
+            <button onClick={() => setEditingBase(false)} className="text-xs text-gray-400 hover:underline shrink-0">Cancel</button>
+          </>
+        ) : (
+          <>
+            <span className="text-xs font-mono text-gray-500">{baseUrl}</span>
+            <button onClick={() => { setDraftBase(baseUrl); setEditingBase(true); }}
+              className="text-xs text-gray-400 hover:text-gray-600 shrink-0" title="Edit base URL">✏️</button>
+          </>
+        )}
+      </div>
+
+      {/* Action buttons */}
+      <div className="flex gap-2 pt-1">
+        <button onClick={copyLink}
+          className={`text-xs px-3 py-1 rounded-md font-medium transition-colors ${copied ? "bg-green-100 text-green-700" : "bg-amber-50 text-amber-700 hover:bg-amber-100"}`}>
+          {copied ? "✓ Copied!" : "📋 Copy link"}
+        </button>
+        <button onClick={() => setShowQr(true)}
+          className="text-xs px-3 py-1 rounded-md font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">
+          📱 QR Code
+        </button>
+      </div>
+
+      {showQr && <QrModal url={fullUrl} onClose={() => setShowQr(false)} />}
+    </div>
+  );
+}
+
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function TestsPage() {
@@ -203,7 +320,6 @@ export default function TestsPage() {
   const [importError, setImportError] = useState("");
   const [previewId, setPreviewId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const origin = typeof window !== "undefined" ? window.location.origin : "";
 
   async function load() {
     setLoading(true);
@@ -322,27 +438,8 @@ export default function TestsPage() {
                   </div>
                 </div>
 
-                {/* Taker link — clickable when published */}
-                {t.link_token && (
-                  <div className="flex items-center gap-2 pt-1 border-t border-gray-100">
-                    <span className="text-xs text-gray-400">Taker link:</span>
-                    <a
-                      href={`${origin}/take/${t.link_token}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-amber-600 hover:underline font-mono"
-                    >
-                      {origin}/take/{t.link_token}
-                    </a>
-                    <button
-                      onClick={() => navigator.clipboard.writeText(`${origin}/take/${t.link_token}`)}
-                      className="text-xs text-gray-400 hover:text-gray-600"
-                      title="Copy link"
-                    >
-                      Copy
-                    </button>
-                  </div>
-                )}
+                {/* Share panel — visible when published */}
+                {t.link_token && <SharePanel token={t.link_token} />}
               </div>
             ))}
           </div>
