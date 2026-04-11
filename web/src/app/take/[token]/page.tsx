@@ -184,10 +184,17 @@ export default function TakePage() {
   async function handleStart() {
     setLoading(true); setError("");
     try {
-      const res = await api.post(`/sessions/take/${token}`, { taker_email: email || null });
+      const res = await api.post(`/sessions/take/${token.toUpperCase()}`, { taker_email: email || null });
       setSession(res.data);
       setStarted(true);
-    } catch (e: any) { setError(e?.response?.data?.detail ?? "Could not start"); }
+    } catch (e: any) {
+      if (!e?.response) {
+        setError("Cannot reach the server. Make sure Quizbee is running and try again.");
+      } else {
+        const detail = e.response.data?.detail;
+        setError(typeof detail === "string" ? detail : "Could not start the test. Check the code and try again.");
+      }
+    }
     finally { setLoading(false); }
   }
 

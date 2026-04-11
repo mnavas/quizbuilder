@@ -19,7 +19,7 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -111,7 +111,7 @@ class CheckAnswerOut(BaseModel):
 async def _load_published_test(link_token: str, db: AsyncSession) -> Test:
     result = await db.execute(
         select(Test)
-        .where(Test.link_token == link_token, Test.published_at.is_not(None), Test.deleted_at.is_(None))
+        .where(func.upper(Test.link_token) == link_token.upper(), Test.published_at.is_not(None), Test.deleted_at.is_(None))
         .options(
             selectinload(Test.blocks).selectinload(TestBlock.block_questions)
         )
