@@ -7,10 +7,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { clearAuthCookies } from "@/lib/api";
 
 const NAV = [
-  { href: "/dashboard", label: "Dashboard" },
   { href: "/tests", label: "Tests" },
   { href: "/results", label: "Results" },
   { href: "/users", label: "Users" },
+  { href: "/settings", label: "Settings" },
 ];
 
 function hasAccessToken() {

@@ -134,21 +134,33 @@ function AnswerRow({ a, idx }: { a: AnswerDetail; idx: number }) {
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 
+type TestOption = { id: string; title: string; published_at: string | null };
+
 function ResultsContent() {
   const params = useSearchParams();
   const testId = params.get("test_id") ?? "";
+  const [tests, setTests] = useState<TestOption[]>([]);
+  const [activeTestId, setActiveTestId] = useState(testId);
   const [sessions, setSessions] = useState<SessionSummary[]>([]);
   const [selected, setSelected] = useState<SessionDetail | null>(null);
   const [loading, setLoading] = useState(false);
 
-  async function load() {
-    if (!testId) return;
+  // Load test list for the picker
+  useEffect(() => {
+    api.get("/tests").then((r) => setTests(r.data)).catch(() => {});
+  }, []);
+
+  // Sync picker with URL param on mount
+  useEffect(() => { if (testId) setActiveTestId(testId); }, [testId]);
+
+  async function load(id: string) {
+    if (!id) return;
     setLoading(true);
-    try { setSessions((await api.get("/results", { params: { test_id: testId } })).data); }
+    try { setSessions((await api.get("/results", { params: { test_id: id } })).data); }
     finally { setLoading(false); }
   }
 
-  useEffect(() => { load(); }, [testId]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { setSessions([]); load(activeTestId); }, [activeTestId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function openDetail(id: string) {
     const res = await api.get(`/results/${id}`);
@@ -156,28 +168,38 @@ function ResultsContent() {
   }
 
   function handleExport() {
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/results/export/csv?test_id=${testId}`;
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/results/export/csv?test_id=${activeTestId}`;
     window.open(url, "_blank");
   }
+
+  const activeTestTitle = tests.find((t) => t.id === activeTestId)?.title ?? "";
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Results</h1>
-        {testId && sessions.length > 0 && (
+        {activeTestId && sessions.length > 0 && (
           <button onClick={handleExport} className="btn-primary">Export CSV</button>
         )}
       </div>
 
-      {!testId && (
-        <p className="text-gray-400 text-sm">
-          Select a test from the <Link href="/tests" className="text-amber-600 hover:underline">Tests page</Link> to view results.
-        </p>
-      )}
+      {/* Test picker */}
+      <div className="mb-6">
+        <select
+          value={activeTestId}
+          onChange={(e) => setActiveTestId(e.target.value)}
+          className="w-full max-w-sm border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-amber-300"
+        >
+          <option value="">— Select a test —</option>
+          {tests.map((t) => (
+            <option key={t.id} value={t.id}>{t.title}{!t.published_at ? " (draft)" : ""}</option>
+          ))}
+        </select>
+      </div>
 
       {loading && <p className="text-gray-400 text-sm">Loading…</p>}
 
-      {!loading && testId && sessions.length === 0 && (
+      {!loading && activeTestId && sessions.length === 0 && (
         <p className="text-gray-400 text-sm">No submissions yet for this test.</p>
       )}
 

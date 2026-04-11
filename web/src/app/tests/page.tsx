@@ -225,25 +225,16 @@ function QrModal({ url, onClose }: { url: string; onClose: () => void }) {
 const LS_BASE_URL_KEY = "qb_base_url";
 
 function SharePanel({ token }: { token: string }) {
-  const defaultBase = typeof window !== "undefined" ? window.location.origin : "";
-  const [baseUrl, setBaseUrl] = useState(() => {
-    if (typeof window === "undefined") return defaultBase;
-    return localStorage.getItem(LS_BASE_URL_KEY) || defaultBase;
-  });
-  const [editingBase, setEditingBase] = useState(false);
-  const [draftBase, setDraftBase] = useState(baseUrl);
+  const [baseUrl, setBaseUrl] = useState("");
   const [copied, setCopied] = useState(false);
   const [showQr, setShowQr] = useState(false);
 
+  useEffect(() => {
+    setBaseUrl(localStorage.getItem(LS_BASE_URL_KEY) || window.location.origin);
+  }, []);
+
   const fullUrl = `${baseUrl.replace(/\/$/, "")}/take/${token}`;
   const joinUrl = `${baseUrl.replace(/\/$/, "")}/join`;
-
-  function saveBase() {
-    const trimmed = draftBase.trim().replace(/\/$/, "");
-    setBaseUrl(trimmed);
-    localStorage.setItem(LS_BASE_URL_KEY, trimmed);
-    setEditingBase(false);
-  }
 
   function copyLink() {
     navigator.clipboard.writeText(fullUrl);
@@ -254,47 +245,21 @@ function SharePanel({ token }: { token: string }) {
   return (
     <div className="mt-2 pt-2 border-t border-gray-100 space-y-2">
       {/* Board code */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 flex-wrap">
         <span className="text-xs text-gray-400 shrink-0">Code:</span>
         <span className="font-mono text-xl font-bold tracking-widest text-amber-600 select-all">
           {token}
         </span>
         <span className="text-xs text-gray-400">
-          — takers go to <span className="font-mono text-gray-600">{joinUrl}</span> and enter this code
+          — takers go to <span className="font-mono text-gray-600">{joinUrl}</span>
         </span>
       </div>
 
-      {/* Full link row */}
+      {/* Full link + actions */}
       <div className="flex items-center gap-2 flex-wrap">
-        <span className="text-xs text-gray-400 shrink-0">Link:</span>
         <span className="text-xs font-mono text-amber-600 break-all">{fullUrl}</span>
       </div>
 
-      {/* Base URL editor */}
-      <div className="flex items-center gap-2">
-        <span className="text-xs text-gray-400 shrink-0">Base URL:</span>
-        {editingBase ? (
-          <>
-            <input
-              value={draftBase}
-              onChange={(e) => setDraftBase(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") saveBase(); if (e.key === "Escape") setEditingBase(false); }}
-              className="text-xs font-mono border border-amber-300 rounded px-2 py-0.5 flex-1 min-w-0 focus:outline-none focus:ring-1 focus:ring-amber-400"
-              autoFocus
-            />
-            <button onClick={saveBase} className="text-xs text-green-600 hover:underline shrink-0">Save</button>
-            <button onClick={() => setEditingBase(false)} className="text-xs text-gray-400 hover:underline shrink-0">Cancel</button>
-          </>
-        ) : (
-          <>
-            <span className="text-xs font-mono text-gray-500">{baseUrl}</span>
-            <button onClick={() => { setDraftBase(baseUrl); setEditingBase(true); }}
-              className="text-xs text-gray-400 hover:text-gray-600 shrink-0" title="Edit base URL">✏️</button>
-          </>
-        )}
-      </div>
-
-      {/* Action buttons */}
       <div className="flex gap-2 pt-1">
         <button onClick={copyLink}
           className={`text-xs px-3 py-1 rounded-md font-medium transition-colors ${copied ? "bg-green-100 text-green-700" : "bg-amber-50 text-amber-700 hover:bg-amber-100"}`}>
