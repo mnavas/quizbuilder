@@ -189,7 +189,7 @@ export default function TakePage() {
       setStarted(true);
     } catch (e: any) {
       if (!e?.response) {
-        setError("Cannot reach the server. Make sure Quizbee is running and try again.");
+        setError("Connection error. Please try again — if the problem persists, contact your instructor.");
       } else {
         const detail = e.response.data?.detail;
         setError(typeof detail === "string" ? detail : "Could not start the test. Check the code and try again.");

@@ -11,7 +11,12 @@
 
 import axios from "axios";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1";
+// In production, NEXT_PUBLIC_API_URL should be the public URL of the API
+// (e.g. https://quizbee.example.com/api/v1). When not set, fall back to the
+// same origin so that a reverse-proxy setup works without configuration.
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ??
+  (typeof window !== "undefined" ? `${window.location.origin}/api/v1` : "http://localhost:8000/api/v1");
 
 export const api = axios.create({ baseURL: API_URL });
 
