@@ -185,6 +185,35 @@
       font-size: 0.8rem; color: var(--gray-600);
     }
 
+    /* ── EXAMPLES BANNER ── */
+    .examples-banner {
+      background: var(--amber); padding: 3rem 2rem; text-align: center;
+    }
+    .examples-banner h2 {
+      font-size: clamp(1.3rem, 3vw, 1.9rem); font-weight: 800;
+      color: var(--white); margin-bottom: 0.75rem;
+    }
+    .examples-banner p {
+      font-size: 0.975rem; color: rgba(255,255,255,0.88);
+      max-width: 540px; margin: 0 auto 1.75rem; line-height: 1.65;
+    }
+    .examples-cards {
+      display: flex; gap: 1rem; justify-content: center;
+      flex-wrap: wrap; margin-bottom: 2rem;
+    }
+    .examples-pill {
+      background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.35);
+      color: var(--white); font-size: 0.85rem; font-weight: 600;
+      padding: 0.5rem 1.1rem; border-radius: 999px;
+    }
+    .examples-banner .btn-white {
+      background: var(--white); color: var(--amber-dark);
+      font-weight: 700; padding: 0.75rem 2rem; font-size: 1rem;
+      border-radius: 8px; text-decoration: none; display: inline-block;
+      transition: opacity 0.15s;
+    }
+    .examples-banner .btn-white:hover { opacity: 0.9; }
+
     /* ── DEPLOY STEPS ── */
     .deploy { background: var(--gray-900); }
     .deploy .section-label { color: var(--amber); }
@@ -375,7 +404,7 @@
   <div class="nav-links">
     <a href="#features" class="hide-mobile">Features</a>
     <a href="#deploy" class="hide-mobile">Deploy</a>
-    <a href="examples.html" class="hide-mobile">Examples</a>
+    <a href="pages/examples.html">Examples</a>
     <a href="#services" class="hide-mobile">Services</a>
     <a href="#support" class="hide-mobile">Support</a>
     <a href="https://github.com/mnavas/quizbee" target="_blank" class="btn btn-primary">Get started</a>
@@ -520,6 +549,19 @@
       </div>
     </div>
   </div>
+</section>
+
+<!-- ── EXAMPLES BANNER ── -->
+<section class="examples-banner" id="examples">
+  <h2>See it in action — step-by-step examples</h2>
+  <p>Learn how to build a spelling bee three different ways: import a JSON file, run the Python script, or let an AI generate the test for you.</p>
+  <div class="examples-cards">
+    <span class="examples-pill">📥 Import JSON</span>
+    <span class="examples-pill">🐍 Python script</span>
+    <span class="examples-pill">🤖 AI-generated</span>
+    <span class="examples-pill">📋 Copy-paste agent prompt</span>
+  </div>
+  <a href="pages/examples.html" class="btn-white">View all examples →</a>
 </section>
 
 <!-- ── DEPLOY ── -->
@@ -693,7 +735,7 @@ docker compose up -d
   <nav>
     <a href="https://github.com/mnavas/quizbee">GitHub</a>
     <a href="https://github.com/mnavas/quizbee/tree/main/docs">Documentation</a>
-    <a href="examples.html">Examples</a>
+    <a href="pages/examples.html">Examples</a>
     <a href="#services">Services</a>
     <a href="#support">Support</a>
     <a href="../LICENSE">License</a>
