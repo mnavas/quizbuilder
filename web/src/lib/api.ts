@@ -6,21 +6,16 @@
  * - Response: on 401, clears auth cookies and redirects to /login (skipped on
  *             /take routes, which are public and use anonymous sessions)
  *
- * Base URL is controlled by NEXT_PUBLIC_API_URL (defaults to localhost for dev).
+ * All API calls use a relative base URL (/api/v1). Next.js rewrites proxy those
+ * requests to the API container on the internal Docker network, so the browser
+ * always calls the same origin and there are no CORS or firewall issues.
  */
 
 import axios from "axios";
 
-// NEXT_PUBLIC_API_URL can be set explicitly for custom deployments.
-// When not set, derive the API URL from the browser's current hostname on
-// port 8000 — this works for any IP or domain without reconfiguring.
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  (typeof window !== "undefined"
-    ? `${window.location.protocol}//${window.location.hostname}:8000/api/v1`
-    : "http://localhost:8000/api/v1");
+export const API_BASE = "/api/v1";
 
-export const api = axios.create({ baseURL: API_URL });
+export const api = axios.create({ baseURL: API_BASE });
 
 // Attach access token from cookie on every request
 api.interceptors.request.use((config) => {

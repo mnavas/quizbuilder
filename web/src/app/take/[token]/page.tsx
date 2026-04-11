@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { api } from "@/lib/api";
+import { api, API_BASE } from "@/lib/api";
 import RichTextViewer, { tiptapToText } from "@/components/RichTextViewer";
 
 type Option = { id: string; content_json: any };
@@ -179,7 +179,7 @@ export default function TakePage() {
   const [error, setError] = useState("");
   const [perQuestionFeedback, setPerQuestionFeedback] = useState<Record<string, PerQuestionFeedback>>({});
   const saving = useRef(false);
-  const apiBase = process.env.NEXT_PUBLIC_API_URL ?? "";
+  const apiBase = API_BASE;
 
   async function handleStart() {
     setLoading(true); setError("");

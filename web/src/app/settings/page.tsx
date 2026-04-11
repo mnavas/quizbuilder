@@ -2,13 +2,21 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { clearAuthCookies } from "@/lib/api";
 
 const LS_BASE_URL_KEY = "qb_base_url";
 
 export default function SettingsPage() {
+  const router = useRouter();
   const [baseUrl, setBaseUrl] = useState("");
   const [draft, setDraft] = useState("");
   const [saved, setSaved] = useState(false);
+
+  function handleLogout() {
+    clearAuthCookies();
+    router.push("/login");
+  }
 
   useEffect(() => {
     const stored = localStorage.getItem(LS_BASE_URL_KEY) || window.location.origin;
@@ -87,6 +95,18 @@ export default function SettingsPage() {
           <Link href="/change-password" className="btn-ghost text-sm">
             Change password →
           </Link>
+        </div>
+
+        {/* Sign out */}
+        <div className="border-t border-gray-100 pt-4">
+          <h2 className="text-sm font-semibold text-gray-800 mb-1">Session</h2>
+          <p className="text-xs text-gray-500 mb-3">Sign out of this browser.</p>
+          <button
+            onClick={handleLogout}
+            className="text-sm px-4 py-2 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition"
+          >
+            Sign out
+          </button>
         </div>
 
       </div>
