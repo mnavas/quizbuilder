@@ -71,6 +71,7 @@ class TestIn(BaseModel):
     draw_count: int | None = None
     available_from: datetime | None = None
     available_until: datetime | None = None
+    practice_enabled: bool = False
     blocks: list[BlockIn] = []
 
 
@@ -106,6 +107,7 @@ class TestOut(BaseModel):
     draw_count: int | None
     available_from: str | None
     available_until: str | None
+    practice_enabled: bool
     link_token: str | None
     published_at: str | None
     blocks: list[BlockOut]
@@ -208,6 +210,7 @@ def _test_out(test: Test) -> TestOut:
         draw_count=test.draw_count,
         available_from=test.available_from.isoformat() if test.available_from else None,
         available_until=test.available_until.isoformat() if test.available_until else None,
+        practice_enabled=test.practice_enabled,
         link_token=test.link_token,
         published_at=test.published_at.isoformat() if test.published_at else None,
         blocks=[_block_out(b) for b in sorted(test.blocks, key=lambda x: x.order)],
@@ -234,6 +237,7 @@ def _test_out_detail(test: Test) -> TestDetailOut:
         draw_count=test.draw_count,
         available_from=test.available_from.isoformat() if test.available_from else None,
         available_until=test.available_until.isoformat() if test.available_until else None,
+        practice_enabled=test.practice_enabled,
         link_token=test.link_token,
         published_at=test.published_at.isoformat() if test.published_at else None,
         blocks=[_block_out_detail(b) for b in sorted(test.blocks, key=lambda x: x.order)],
@@ -344,6 +348,7 @@ async def create_test(
         draw_count=body.draw_count,
         available_from=body.available_from,
         available_until=body.available_until,
+        practice_enabled=body.practice_enabled,
         blocks=[],
     )
     db.add(test)
@@ -377,6 +382,7 @@ async def update_test(
     test.draw_count = body.draw_count
     test.available_from = body.available_from
     test.available_until = body.available_until
+    test.practice_enabled = body.practice_enabled
     await _apply_blocks(test, body.blocks, user.tenant_id, db)
     await db.commit()
     return _test_out(await _load_test(test_id, user.tenant_id, db))
@@ -781,6 +787,36 @@ async def export_test(
         media_type="application/zip",
         headers={"Content-Disposition": f'attachment; filename="quizbee_{slug}.zip"'},
     )
+
+
+@router.get("/{test_id}/practice-bundle")
+async def practice_bundle(
+    test_id: str,
+    db: AsyncSession = Depends(get_db),
+):
+    """Public endpoint — returns the test as a practice bundle JSON for the mobile app.
+    Only available when practice_enabled is True on the test."""
+    result = await db.execute(
+        select(Test)
+        .where(Test.id == test_id, Test.deleted_at.is_(None))
+        .options(
+            selectinload(Test.blocks)
+            .selectinload(TestBlock.block_questions)
+            .selectinload(TestBlockQuestion.question)
+        )
+    )
+    test = result.scalar_one_or_none()
+    if not test or not test.practice_enabled:
+        raise HTTPException(status_code=404, detail="Practice bundle not available for this test")
+
+    all_q_ids = [bq.question_id for b in test.blocks for bq in b.block_questions]
+    questions_map: dict[str, Question] = {}
+    if all_q_ids:
+        q_result = await db.execute(select(Question).where(Question.id.in_(all_q_ids)))
+        for q in q_result.scalars():
+            questions_map[q.id] = q
+
+    return JSONResponse(content=_test_export_payload(test, questions_map))
 
 
 @router.post("/import", response_model=TestOut, status_code=status.HTTP_201_CREATED)

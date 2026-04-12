@@ -141,6 +141,7 @@ const defaultSettings = {
   show_score: "at_end", show_correct_answers: "never",
   passing_score_pct: "", multiple_select_scoring: "all_or_nothing",
   draw_count: "", available_from: "", available_until: "",
+  practice_enabled: false,
 };
 
 function emptyQForm(blockIdx: number): QFormState {
@@ -226,6 +227,7 @@ export default function TestForm({ testId }: Props) {
         draw_count: t.draw_count ?? "",
         available_from: t.available_from ? t.available_from.slice(0, 16) : "",
         available_until: t.available_until ? t.available_until.slice(0, 16) : "",
+        practice_enabled: t.practice_enabled ?? false,
       });
       setBlocks(
         t.blocks.length > 0
@@ -550,6 +552,16 @@ export default function TestForm({ testId }: Props) {
             </label>
           </div>
         )}
+
+        <div className="border-t border-gray-100 pt-4">
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" checked={settings.practice_enabled as boolean} onChange={(e) => set("practice_enabled", e.target.checked)} className="w-4 h-4 accent-amber-500" />
+            <div>
+              <p className="text-sm font-medium text-gray-800">Enable practice mode</p>
+              <p className="text-xs text-gray-500">Allows the Quizbee mobile app to download this test as a practice bundle via QR code.</p>
+            </div>
+          </label>
+        </div>
       </div>
 
       {/* Blocks / Questions */}

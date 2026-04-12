@@ -9,7 +9,7 @@ import RichTextViewer, { tiptapToText } from "@/components/RichTextViewer";
 type Test = {
   id: string; title: string; mode: string; access: string;
   published_at: string | null; link_token: string | null;
-  draw_count: number | null;
+  draw_count: number | null; practice_enabled: boolean;
   blocks: { questions: any[] }[];
 };
 
@@ -221,6 +221,31 @@ function QrModal({ url, onClose }: { url: string; onClose: () => void }) {
   );
 }
 
+// ── Practice QR Modal ─────────────────────────────────────────────────────────
+
+function PracticeQrModal({ testId, baseUrl, onClose }: { testId: string; baseUrl: string; onClose: () => void }) {
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/tests/${testId}/practice-bundle`;
+  const [dataUrl, setDataUrl] = useState("");
+  useEffect(() => {
+    QRCode.toDataURL(url, { width: 280, margin: 2, color: { dark: "#111827", light: "#ffffff" } })
+      .then(setDataUrl);
+  }, [url]);
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
+      <div className="bg-white rounded-2xl p-6 shadow-xl max-w-xs w-full text-center" onClick={(e) => e.stopPropagation()}>
+        <p className="text-sm font-semibold text-gray-700 mb-1">Practice QR</p>
+        <p className="text-xs text-gray-400 mb-3">Scan with the Quizbee mobile app to download this bundle.</p>
+        {dataUrl
+          // eslint-disable-next-line @next/next/no-img-element
+          ? <img src={dataUrl} alt="Practice QR code" className="mx-auto rounded-lg" />
+          : <div className="w-[280px] h-[280px] mx-auto bg-gray-100 rounded-lg animate-pulse" />}
+        <p className="text-xs text-gray-400 mt-3 break-all font-mono">{url}</p>
+        <button onClick={onClose} className="mt-4 w-full btn-ghost text-sm">Close</button>
+      </div>
+    </div>
+  );
+}
+
 // ── Share Panel ───────────────────────────────────────────────────────────────
 
 const LS_BASE_URL_KEY = "qb_base_url";
@@ -285,7 +310,10 @@ export default function TestsPage() {
   const [importing, setImporting] = useState(false);
   const [importError, setImportError] = useState("");
   const [previewId, setPreviewId] = useState<string | null>(null);
+  const [practiceQrId, setPracticeQrId] = useState<string | null>(null);
   const [cloningId, setCloningId] = useState<string | null>(null);
+  const [baseUrl, setBaseUrl] = useState("");
+  useEffect(() => { setBaseUrl(localStorage.getItem("qb_base_url") || window.location.origin); }, []);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const csvInputRef = useRef<HTMLInputElement>(null);
 
@@ -432,6 +460,9 @@ export default function TestsPage() {
                       {cloningId === t.id ? "Cloning…" : "Clone"}
                     </button>
                     <button onClick={() => handleExport(t.id, t.title)} className="text-xs text-indigo-500 hover:underline">↓ Export</button>
+                    {t.practice_enabled && (
+                      <button onClick={() => setPracticeQrId(t.id)} className="text-xs text-amber-500 hover:underline">📱 Practice QR</button>
+                    )}
                     <button onClick={() => handleDelete(t.id)} className="text-xs text-red-500 hover:underline">Delete</button>
                   </div>
                 </div>
@@ -444,6 +475,7 @@ export default function TestsPage() {
         )}
 
       {previewId && <PreviewModal testId={previewId} onClose={() => setPreviewId(null)} />}
+      {practiceQrId && <PracticeQrModal testId={practiceQrId} baseUrl={baseUrl} onClose={() => setPracticeQrId(null)} />}
     </div>
   );
 }

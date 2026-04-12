@@ -186,6 +186,8 @@ class Test(Base):
     available_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     # Phase 2.5: if set, session start draws this many questions randomly from the test's pool
     draw_count: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    # practice mode: if True, public bundle endpoint is available for the mobile app
+    practice_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     # shareable link token (set on publish)
     link_token: Mapped[str | None] = mapped_column(String(100), unique=True, nullable=True)
     published_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
