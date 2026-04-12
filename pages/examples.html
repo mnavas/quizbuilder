@@ -308,16 +308,17 @@
 <div class="page-header">
   <div class="badge">🐝 Practical examples</div>
   <h1>Building your first tests</h1>
-  <p>Three ways to get content into Quizbee — from a simple JSON import to AI-assisted bulk creation.</p>
+  <p>Four ways to get content into Quizbee — from a simple CSV spreadsheet to AI-assisted bulk creation.</p>
 </div>
 
 <!-- ── TOC BAR ── -->
 <div class="toc-bar">
   <ul>
     <li><a href="#import" class="active">1 · Import JSON</a></li>
-    <li><a href="#script">2 · Python script</a></li>
-    <li><a href="#ai">3 · AI-assisted</a></li>
-    <li><a href="#agent-context">4 · Agent context</a></li>
+    <li><a href="#csv">2 · CSV import</a></li>
+    <li><a href="#script">3 · Python script</a></li>
+    <li><a href="#ai">4 · AI-assisted</a></li>
+    <li><a href="#agent-context">5 · Agent context</a></li>
   </ul>
 </div>
 
@@ -452,10 +453,91 @@
   <hr class="divider" />
 
   <!-- ══════════════════════════════════════════════
-       EXAMPLE 2 — PYTHON SCRIPT
+       EXAMPLE 2 — CSV IMPORT
+  ══════════════════════════════════════════════ -->
+  <section class="example-section" id="csv">
+    <div class="example-tag">Example 2</div>
+    <div class="method-badge method-import">📊 CSV import</div>
+    <h2>Any quiz — import from a spreadsheet</h2>
+    <p>
+      If you already have questions in a spreadsheet (Excel, Google Sheets, Numbers), you can export as CSV
+      and import directly into Quizbee. One test is created automatically, with questions grouped by the
+      optional <strong>block</strong> column.
+    </p>
+
+    <div class="steps">
+
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>Prepare your spreadsheet</h3>
+          <p>
+            Your CSV must have a <strong>header row</strong> with these columns. All except <code>type</code> and <code>prompt</code> are optional.
+          </p>
+          <div class="code-wrap" style="margin-top:0.75rem;">
+            <pre><span class="ky">type</span>         <span class="cm"># multiple_choice | multiple_select | true_false | short_text | long_text</span>
+<span class="ky">prompt</span>       <span class="cm"># question text (plain text)</span>
+<span class="ky">options</span>      <span class="cm"># choices separated by | for mc/ms, e.g.  Paris|London|Berlin</span>
+<span class="ky">correct_answer</span> <span class="cm"># single value for mc/tf, comma-list for ms, plain text for short_text</span>
+<span class="ky">points</span>       <span class="cm"># integer, default 1</span>
+<span class="ky">tags</span>         <span class="cm"># comma-separated tags (optional)</span>
+<span class="ky">block</span>        <span class="cm"># block/group title to organize questions (optional)</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>Example CSV — geography quiz</h3>
+          <div class="code-wrap">
+            <pre>type,prompt,options,correct_answer,points,tags,block
+multiple_choice,What is the capital of France?,Paris|London|Berlin|Madrid,Paris,2,geography,Europe
+multiple_choice,Which country is the largest by area?,Russia|Canada|USA|China,Russia,2,geography,World
+true_false,The Amazon river is in Africa.,,false,1,geography,Americas
+multiple_select,"Which are continents? (select all)","Africa|Europe|Pacific|Antarctica","Africa,Europe,Antarctica",3,geography,World
+short_text,Spell the name of the capital of Japan.,,Tokyo,1,spelling,Asia</pre>
+          </div>
+          <div class="callout">
+            <span class="callout-icon">💡</span>
+            <span>
+              <strong>correct_answer rules by type:</strong>
+              <br>• <code>multiple_choice</code> / <code>true_false</code>: the exact option value, e.g. <code>Paris</code> or <code>false</code>
+              <br>• <code>multiple_select</code>: comma-separated values, e.g. <code>Africa,Europe,Antarctica</code>
+              <br>• <code>short_text</code>: the expected text (auto-scored, case-insensitive)
+              <br>• <code>long_text</code>: leave blank — always goes to manual review
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>Import the file</h3>
+          <p>In the admin panel, go to <strong>Tests</strong> and click the <strong>↑ CSV</strong> button in the top-right corner.</p>
+          <p>Select your <code>.csv</code> file. Quizbee creates a new unpublished test named after the filename, with all questions grouped into blocks matching the <code>block</code> column.</p>
+          <p>After import: review the test, edit any question that needs adjusting, then click <strong>Publish</strong> to make it live.</p>
+          <div class="callout callout-info">
+            <span class="callout-icon">💡</span>
+            <span>
+              The file must be saved as <strong>UTF-8</strong>. In Excel: <em>File → Save As → CSV UTF-8 (Comma delimited)</em>.
+              In Google Sheets: <em>File → Download → Comma-separated values (.csv)</em>.
+            </span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- ══════════════════════════════════════════════
+       EXAMPLE 3 — PYTHON SCRIPT
   ══════════════════════════════════════════════ -->
   <section class="example-section" id="script">
-    <div class="example-tag">Example 2</div>
+    <div class="example-tag">Example 3</div>
     <div class="method-badge method-script">🐍 Python script</div>
     <h2>Spelling bee — bulk create with <code>seed_audio.py</code></h2>
     <p>
@@ -554,10 +636,10 @@ python seed_audio.py \
   <hr class="divider" />
 
   <!-- ══════════════════════════════════════════════
-       EXAMPLE 3 — AI-ASSISTED
+       EXAMPLE 4 — AI-ASSISTED
   ══════════════════════════════════════════════ -->
   <section class="example-section" id="ai">
-    <div class="example-tag">Example 3</div>
+    <div class="example-tag">Example 4</div>
     <div class="method-badge method-ai">🤖 AI-assisted</div>
     <h2>Let an AI build the test for you</h2>
     <p>
@@ -746,10 +828,10 @@ python seed_audio.py \
   <hr class="divider" />
 
   <!-- ══════════════════════════════════════════════
-       EXAMPLE 4 — AGENT CONTEXT
+       EXAMPLE 5 — AGENT CONTEXT
   ══════════════════════════════════════════════ -->
   <section class="example-section" id="agent-context">
-    <div class="example-tag">Example 4</div>
+    <div class="example-tag">Example 5</div>
     <div class="method-badge method-ai">📋 Copy &amp; paste</div>
     <h2>Full agent context — give this to any AI</h2>
     <p>
@@ -1002,11 +1084,11 @@ function copyAgentCtx(btn) {
   <p>Self-hosted online assessment platform</p>
   <nav>
     <a href="https://github.com/mnavas/quizbee">GitHub</a>
-    <a href="https://github.com/mnavas/quizbee/tree/main/docs">Documentation</a>
+    <a href="install.html">Documentation</a>
     <a href="examples.html">Examples</a>
     <a href="../index.html#services">Services</a>
     <a href="../index.html#support">Support</a>
-    <a href="../../LICENSE">License</a>
+    <a href="../LICENSE">License</a>
     <a href="https://github.com/mnavas/quizbee/issues">Issues</a>
   </nav>
 </footer>

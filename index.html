@@ -455,7 +455,7 @@
   <p>Build rich tests with audio, video, formulas, and images. Auto-score results, review open answers, and keep every byte of data on your own server.</p>
   <div class="hero-actions">
     <a href="https://github.com/mnavas/quizbee" class="btn btn-primary">⬇ Self-host in minutes</a>
-    <a href="https://github.com/mnavas/quizbee/tree/main/docs" class="btn btn-outline">Read the docs</a>
+    <a href="pages/install.html" class="btn btn-outline">Read the docs</a>
   </div>
   <div class="hero-meta">
     <span>⚡ Docker Compose deploy</span>
@@ -516,7 +516,22 @@
       <div class="feature-card">
         <div class="feature-icon">📤</div>
         <h3>Import & export</h3>
-        <p>Export tests as JSON or ZIP bundles (with media). Import on any other Quizbee instance. Share tests between schools or teams.</p>
+        <p>Export tests as JSON or ZIP bundles (with media). Import via JSON, ZIP, or CSV spreadsheet. Share tests between schools or teams.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📋</div>
+        <h3>One-click test clone</h3>
+        <p>Duplicate any test — questions, settings, and blocks — as an independent copy. Great for versioning exams or creating variants.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3>Partial credit scoring</h3>
+        <p>Multiple-select questions can award proportional points for partially correct answers, or stick to all-or-nothing — configurable per test.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📅</div>
+        <h3>Availability windows</h3>
+        <p>Set an open date and a close date on any test. Takers who try outside the window get a clear message — no manual toggling needed.</p>
       </div>
     </div>
   </div>
@@ -592,6 +607,7 @@
   <p>Learn how to build a spelling bee three different ways: import a JSON file, run the Python script, or let an AI generate the test for you.</p>
   <div class="examples-cards">
     <span class="examples-pill">📥 Import JSON</span>
+    <span class="examples-pill">📊 CSV import</span>
     <span class="examples-pill">🐍 Python script</span>
     <span class="examples-pill">🤖 AI-generated</span>
     <span class="examples-pill">📋 Copy-paste agent prompt</span>
@@ -769,7 +785,7 @@ docker compose up -d
   <p style="margin-top:0.4rem;">Released under the <a href="LICENSE" style="color:var(--amber);text-decoration:none;">GNU General Public License v3.0</a></p>
   <nav>
     <a href="https://github.com/mnavas/quizbee">GitHub</a>
-    <a href="https://github.com/mnavas/quizbee/tree/main/docs">Documentation</a>
+    <a href="pages/install.html">Documentation</a>
     <a href="pages/install.html">Install</a>
     <a href="pages/examples.html">Examples</a>
     <a href="#services">Services</a>
