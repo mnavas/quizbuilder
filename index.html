@@ -391,7 +391,42 @@
       .hero { padding: 4rem 1.25rem 3.5rem; }
       .section { padding: 3.5rem 1.25rem; }
     }
+
+    /* ── DEUNA MODAL ── */
+    .deuna-btn {
+      display: flex; align-items: center; gap: 0.75rem;
+      background: #1a1a2e; color: var(--white);
+      border: none; border-radius: 10px; padding: 0.75rem 1rem;
+      cursor: pointer; width: 100%; font-family: 'Inter', sans-serif;
+      font-size: 0.9rem; font-weight: 600; transition: opacity 0.15s;
+    }
+    .deuna-btn:hover { opacity: 0.85; }
+    .deuna-btn-icon { font-size: 1.2rem; flex-shrink: 0; }
+    .deuna-btn-text { display: flex; flex-direction: column; line-height: 1.2; text-align: left; }
+    .deuna-btn-text small { font-size: 0.75rem; font-weight: 400; opacity: 0.75; }
+
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 999;
+      background: rgba(0,0,0,0.65); align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--white); border-radius: 20px;
+      padding: 2rem; max-width: 340px; width: 90%; text-align: center;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.25);
+    }
+    .modal-box h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .modal-box p { font-size: 0.85rem; color: var(--gray-600); margin-bottom: 1rem; }
+    .modal-box img { width: 100%; max-width: 260px; border-radius: 12px; }
+    .modal-close {
+      display: block; margin: 1rem auto 0; padding: 0.5rem 1.5rem;
+      background: var(--gray-100); border: none; border-radius: 8px;
+      font-family: 'Inter', sans-serif; font-size: 0.875rem; font-weight: 600;
+      cursor: pointer; color: var(--gray-700);
+    }
+    .modal-close:hover { background: var(--gray-200); }
   </style>
+
 </head>
 <body>
 
@@ -633,7 +668,7 @@ docker compose up -d
           <li>Admin account configured</li>
           <li>Backup schedule configured</li>
         </ul>
-        <a href="mailto:your@email.com?subject=Quizbee+Setup" class="service-cta service-cta-outline">Contact me →</a>
+        <a href="mailto:warionv@gmail.com?subject=Quizbee+Setup" class="service-cta service-cta-outline">Contact me →</a>
       </div>
 
       <div class="service-card featured">
@@ -647,7 +682,7 @@ docker compose up -d
           <li>Correct answers verified</li>
           <li>Test review before handover</li>
         </ul>
-        <a href="mailto:your@email.com?subject=Quizbee+Migration" class="service-cta service-cta-primary">Get a quote →</a>
+        <a href="mailto:warionv@gmail.com?subject=Quizbee+Migration" class="service-cta service-cta-primary">Get a quote →</a>
       </div>
 
       <div class="service-card">
@@ -660,7 +695,7 @@ docker compose up -d
           <li>API integrations</li>
           <li>Performance & scaling work</li>
         </ul>
-        <a href="mailto:your@email.com?subject=Quizbee+Custom+Dev" class="service-cta service-cta-outline">Let's talk →</a>
+        <a href="mailto:warionv@gmail.com?subject=Quizbee+Custom+Dev" class="service-cta service-cta-outline">Let's talk →</a>
       </div>
 
     </div>
@@ -684,7 +719,7 @@ docker compose up -d
         <h3>Choose how to support</h3>
         <div class="donate-options">
 
-          <a href="https://github.com/sponsors/your-github-username" target="_blank" class="donate-btn donate-btn-github">
+          <a href="https://github.com/sponsors/mnavas" target="_blank" class="donate-btn donate-btn-github">
             <span class="donate-btn-icon">♥</span>
             <span class="donate-btn-text">
               GitHub Sponsors
@@ -692,21 +727,21 @@ docker compose up -d
             </span>
           </a>
 
-          <a href="https://buymeacoffee.com/your-username" target="_blank" class="donate-btn donate-btn-coffee">
-            <span class="donate-btn-icon">☕</span>
+          <a href="https://paypal.me/warionv" target="_blank" class="donate-btn donate-btn-paypal">
+            <span class="donate-btn-icon">💳</span>
             <span class="donate-btn-text">
-              Buy me a coffee
-              <small>Quick one-time support</small>
+              PayPal — Send money
+              <small>paypal.me/warionv</small>
             </span>
           </a>
 
-          <a href="https://paypal.me/your-username" target="_blank" class="donate-btn donate-btn-paypal">
-            <span class="donate-btn-icon">💳</span>
-            <span class="donate-btn-text">
-              PayPal
-              <small>One-time donation</small>
+          <button class="deuna-btn" onclick="document.getElementById('deuna-modal').classList.add('open')">
+            <span class="deuna-btn-icon">📱</span>
+            <span class="deuna-btn-text">
+              De Una · Banco Pichincha
+              <small>Pago con QR — Ecuador</small>
             </span>
-          </a>
+          </button>
 
         </div>
       </div>
@@ -743,6 +778,17 @@ docker compose up -d
     <a href="https://github.com/mnavas/quizbee/issues">Issues</a>
   </nav>
 </footer>
+
+<!-- ── DE UNA QR MODAL ── -->
+<div class="modal-overlay" id="deuna-modal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal-box">
+    <h3>De Una · Banco Pichincha</h3>
+    <p>Escanea el QR con tu app bancaria para enviar tu aporte.<br>¡Muchas gracias!</p>
+    <img src="assets/deuna-qr.png" alt="QR De Una — Banco Pichincha — Navas Minaca Mario Fernando" />
+    <button class="modal-close" onclick="document.getElementById('deuna-modal').classList.remove('open')">Cerrar</button>
+  </div>
+</div>
+
 
 </body>
 </html>

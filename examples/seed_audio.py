@@ -9,7 +9,7 @@ Requirements:
 
 Usage:
     python seed_audio.py --email admin@quizbee.com --password yourpassword
-    python seed_audio.py --email admin@quizbee.com --password admin --api http://localhost:8000/api/v1
+    python seed_audio.py --email admin@quizbee.com --password password yourpassword --api http://localhost:8000/api/v1
     python seed_audio.py --email admin@quizbee.com --password yourpassword --draw 5
 """
 
