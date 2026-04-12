@@ -223,8 +223,8 @@ function QrModal({ url, onClose }: { url: string; onClose: () => void }) {
 
 // ── Practice QR Modal ─────────────────────────────────────────────────────────
 
-function PracticeQrModal({ testId, onClose }: { testId: string; onClose: () => void }) {
-  const url = `${window.location.origin}/api/v1/tests/${testId}/practice-bundle`;
+function PracticeQrModal({ testId, baseUrl, onClose }: { testId: string; baseUrl: string; onClose: () => void }) {
+  const url = `${baseUrl.replace(/\/$/, "")}/api/v1/tests/${testId}/practice-bundle`;
   const [dataUrl, setDataUrl] = useState("");
   useEffect(() => {
     QRCode.toDataURL(url, { width: 280, margin: 2, color: { dark: "#111827", light: "#ffffff" } })
@@ -312,6 +312,8 @@ export default function TestsPage() {
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [practiceQrId, setPracticeQrId] = useState<string | null>(null);
   const [cloningId, setCloningId] = useState<string | null>(null);
+  const [baseUrl, setBaseUrl] = useState("");
+  useEffect(() => { setBaseUrl(localStorage.getItem("qb_base_url") || window.location.origin); }, []);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const csvInputRef = useRef<HTMLInputElement>(null);
 
@@ -473,7 +475,7 @@ export default function TestsPage() {
         )}
 
       {previewId && <PreviewModal testId={previewId} onClose={() => setPreviewId(null)} />}
-      {practiceQrId && <PracticeQrModal testId={practiceQrId} onClose={() => setPracticeQrId(null)} />}
+      {practiceQrId && <PracticeQrModal testId={practiceQrId} baseUrl={baseUrl} onClose={() => setPracticeQrId(null)} />}
     </div>
   );
 }
