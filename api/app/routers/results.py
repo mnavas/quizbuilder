@@ -1,6 +1,5 @@
 import csv
 import io
-from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
@@ -11,7 +10,7 @@ from sqlalchemy.orm import selectinload
 
 from app.auth import require_role
 from app.db import get_db
-from app.models.core import Answer, Question, Session, Test, User
+from app.models.core import Question, Session, Test, User
 
 router = APIRouter()
 

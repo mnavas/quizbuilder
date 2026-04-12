@@ -23,10 +23,9 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.auth import get_current_user
 from app.db import get_db
 from app.models.core import (
-    Answer, Question, Session, SessionQuestion, Test, TestBlock, User,
+    Answer, Question, Session, SessionQuestion, Test, TestBlock,
 )
 from app.scoring import score_answer
 

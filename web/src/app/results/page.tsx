@@ -116,7 +116,7 @@ function AnswerRow({ a, idx }: { a: AnswerDetail; idx: number }) {
       {/* Short/long text */}
       {(a.question_type === "short_text" || a.question_type === "long_text") && plainValue !== null && (
         <div className="mt-1">
-          <p className="text-xs text-gray-400 mb-0.5">Taker's answer:</p>
+          <p className="text-xs text-gray-400 mb-0.5">Taker&apos;s answer:</p>
           <p className="text-sm text-gray-700 bg-white border border-gray-200 rounded px-3 py-2">{plainValue}</p>
           {a.correct_answer?.text && (
             <p className="text-xs text-green-600 mt-1">✓ Expected: <strong>{a.correct_answer.text}</strong></p>

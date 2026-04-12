@@ -210,6 +210,7 @@ function QrModal({ url, onClose }: { url: string; onClose: () => void }) {
         onClick={(e) => e.stopPropagation()}>
         <p className="text-sm font-semibold text-gray-700 mb-3">Scan to open the test</p>
         {dataUrl
+          // eslint-disable-next-line @next/next/no-img-element
           ? <img src={dataUrl} alt="QR code" className="mx-auto rounded-lg" />
           : <div className="w-[280px] h-[280px] mx-auto bg-gray-100 rounded-lg animate-pulse" />}
         <p className="text-xs text-gray-400 mt-3 break-all font-mono">{url}</p>
