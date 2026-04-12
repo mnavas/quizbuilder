@@ -297,7 +297,7 @@
   </a>
   <div class="nav-links">
     <a href="../index.html#features" class="hide-mobile">Features</a>
-    <a href="../index.html#deploy" class="hide-mobile">Deploy</a>
+    <a href="install.html">Install</a>
     <a href="examples.html" class="active">Examples</a>
     <a href="../index.html#services" class="hide-mobile">Services</a>
     <a href="https://github.com/mnavas/quizbee" target="_blank" class="btn btn-primary">Get started</a>
@@ -616,7 +616,7 @@ python seed_audio.py \
             </p>
             <ul>
               <li>For <code>multiple_choice</code>: set <code>options_json</code> to <code>["Option A", "Option B", ...]</code> and <code>correct_answer</code> to the exact text of the correct option.</li>
-              <li>For <code>multiple_select</code>: set <code>options_json</code> to a list and <code>correct_answer</code> to a JSON array string, e.g. <code>"[\"A\", \"C\"]"</code>.</li>
+              <li>For <code>multiple_select</code>: set <code>options_json</code> to a list and <code>correct_answer</code> to a JSON array, e.g. <code>["A", "C"]</code>.</li>
               <li>For <code>true_false</code>: set <code>correct_answer</code> to <code>"true"</code> or <code>"false"</code>.</li>
               <li>For <code>short_text</code> with auto-scoring: set <code>review_required: false</code> and <code>correct_answer</code> to the expected string.</li>
               <li>For <code>long_text</code> or <code>file_upload</code>: set <code>review_required: true</code> and <code>correct_answer: null</code>.</li>
@@ -719,7 +719,7 @@ python seed_audio.py \
 {
   <span class="ky">"type"</span>: <span class="st">"multiple_select"</span>, <span class="ky">"points"</span>: <span class="nu">2</span>, <span class="ky">"review_required"</span>: <span class="vl">false</span>,
   <span class="ky">"options_json"</span>: [<span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"C"</span>, <span class="st">"D"</span>],
-  <span class="ky">"correct_answer"</span>: <span class="st">"[\"A\", \"C\"]"</span>
+  <span class="ky">"correct_answer"</span>: [<span class="st">"A"</span>, <span class="st">"C"</span>]
 }
 
 <span class="cm">// True / false — auto-scored</span>
@@ -847,14 +847,14 @@ QUESTION TYPES — FULL REFERENCE
    "type": "multiple_select"
    "review_required": false
    "options_json": ["A", "B", "C", "D"]
-   "correct_answer": "[\"A\", \"C\"]"   ← JSON array encoded as a string
+   "correct_answer": ["A", "C"]   ← a JSON array listing the correct option texts
 
    Example:
    {
      "type": "multiple_select", "points": 2, "review_required": false,
      "prompt_json": { "type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Which are mammals? Select all that apply."}]}] },
      "options_json": ["Dolphin", "Shark", "Bat", "Salmon"],
-     "correct_answer": "[\"Dolphin\", \"Bat\"]"
+     "correct_answer": ["Dolphin", "Bat"]
    }
 
 ──────────────────────────────────────────
@@ -914,7 +914,7 @@ RULES — READ CAREFULLY
 - Every question MUST have prompt_json using the doc/paragraph/text wrapper shown above.
 - Never omit any field — use null for optional fields you don't need.
 - For multiple_choice: correct_answer must be the exact string from options_json.
-- For multiple_select: correct_answer must be a JSON array encoded as a string: "[\"A\", \"B\"]"
+- For multiple_select: correct_answer must be a JSON array: ["A", "B"]
 - For true_false: correct_answer is always the string "true" or "false", never a boolean.
 - For short_text auto-scoring: review_required must be false and correct_answer must be a string.
 - For long_text: review_required must be true and correct_answer must be null.

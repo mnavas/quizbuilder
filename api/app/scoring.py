@@ -61,7 +61,10 @@ def _score_multiple_select(question: Question, value: dict) -> tuple[int, bool]:
     """
     All-or-nothing scoring: award full points only when selected set exactly equals
     the correct set. Partial credit is not supported yet (see plan §open-questions).
-    correct_answer may be stored as {"values": [...]} dict or a bare list.
+    correct_answer may be stored as:
+      {"values": [...]}  — dict form (created by the editor)
+      ["A", "C"]         — bare JSON array (import format)
+      "A,C"              — comma-separated string (simplified import format)
     """
     selected: set = set(value.get("selected", []))
     correct_raw = question.correct_answer
@@ -69,6 +72,9 @@ def _score_multiple_select(question: Question, value: dict) -> tuple[int, bool]:
         correct = set(correct_raw.get("values", []))
     elif isinstance(correct_raw, list):
         correct = set(correct_raw)
+    elif isinstance(correct_raw, str) and correct_raw.strip():
+        # Comma-separated string: "A, C" → {"A", "C"}
+        correct = set(v.strip() for v in correct_raw.split(",") if v.strip())
     else:
         correct = set()
 
