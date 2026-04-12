@@ -140,7 +140,7 @@ const defaultSettings = {
   randomize_questions: false, randomize_options: false,
   show_score: "at_end", show_correct_answers: "never",
   passing_score_pct: "", multiple_select_scoring: "all_or_nothing",
-  draw_count: "",
+  draw_count: "", available_from: "", available_until: "",
 };
 
 function emptyQForm(blockIdx: number): QFormState {
@@ -222,6 +222,8 @@ export default function TestForm({ testId }: Props) {
         passing_score_pct: t.passing_score_pct ?? "",
         multiple_select_scoring: t.multiple_select_scoring,
         draw_count: t.draw_count ?? "",
+        available_from: t.available_from ? t.available_from.slice(0, 16) : "",
+        available_until: t.available_until ? t.available_until.slice(0, 16) : "",
       });
       setBlocks(
         t.blocks.length > 0
@@ -392,6 +394,8 @@ export default function TestForm({ testId }: Props) {
         passing_score_pct: settings.passing_score_pct ? parseInt(settings.passing_score_pct as string) : null,
         draw_count: drawCount,
         randomize_questions: drawCount ? false : settings.randomize_questions,
+        available_from: settings.available_from || null,
+        available_until: settings.available_until || null,
         blocks: blocks.map((b, i) => ({
           title: b.title || null,
           context_json: b.context_json || null,
@@ -508,6 +512,25 @@ export default function TestForm({ testId }: Props) {
             </select>
           </div>
         </div>
+        <div>
+          <label className="label">Multiple-select scoring</label>
+          <select value={settings.multiple_select_scoring} onChange={(e) => set("multiple_select_scoring", e.target.value)} className="input w-full">
+            <option value="all_or_nothing">All or nothing (full points only when all correct)</option>
+            <option value="partial">Partial credit (proportional to correct selections)</option>
+          </select>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="label">Available from (optional)</label>
+            <input type="datetime-local" value={settings.available_from} onChange={(e) => set("available_from", e.target.value)} className="input w-full" />
+          </div>
+          <div>
+            <label className="label">Available until (optional)</label>
+            <input type="datetime-local" value={settings.available_until} onChange={(e) => set("available_until", e.target.value)} className="input w-full" />
+          </div>
+        </div>
+
         {!isRandomMode && (
           <div className="flex gap-6">
             <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">

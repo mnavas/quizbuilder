@@ -178,7 +178,7 @@ async def _run_scoring(session: Session, test: Test, db: AsyncSession):
     for q_id, q in questions.items():
         answer = answer_map.get(q_id)
         value = answer.value_json if answer else None
-        auto_score, needs_review = score_answer(q, value)
+        auto_score, needs_review = score_answer(q, value, test.multiple_select_scoring)
 
         if answer:
             answer.auto_score = auto_score
@@ -225,6 +225,13 @@ async def start_session(
     No authentication required — public endpoint gated only by the link_token.
     """
     test = await _load_published_test(link_token, db)
+
+    # Check availability window
+    now = datetime.now(timezone.utc)
+    if test.available_from and now < test.available_from:
+        raise HTTPException(status_code=403, detail="This test is not available yet")
+    if test.available_until and now > test.available_until:
+        raise HTTPException(status_code=403, detail="This test has closed")
 
     # Check attempt limits for registered users (simplified: skip for open/anonymous)
     taker_id: str | None = None

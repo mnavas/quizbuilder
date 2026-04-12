@@ -181,6 +181,9 @@ class Test(Base):
     # sync mode fields
     scheduled_start: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     allow_late_join: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    # time window: takers can only start within this range (null = no restriction)
+    available_from: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    available_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     # Phase 2.5: if set, session start draws this many questions randomly from the test's pool
     draw_count: Mapped[int | None] = mapped_column(Integer, nullable=True)
     # shareable link token (set on publish)

@@ -1,3 +1,4 @@
+import csv
 import io
 import json
 import mimetypes
@@ -68,6 +69,8 @@ class TestIn(BaseModel):
     passing_score_pct: int | None = None
     multiple_select_scoring: str = "all_or_nothing"
     draw_count: int | None = None
+    available_from: datetime | None = None
+    available_until: datetime | None = None
     blocks: list[BlockIn] = []
 
 
@@ -101,6 +104,8 @@ class TestOut(BaseModel):
     passing_score_pct: int | None
     multiple_select_scoring: str
     draw_count: int | None
+    available_from: str | None
+    available_until: str | None
     link_token: str | None
     published_at: str | None
     blocks: list[BlockOut]
@@ -201,6 +206,8 @@ def _test_out(test: Test) -> TestOut:
         passing_score_pct=test.passing_score_pct,
         multiple_select_scoring=test.multiple_select_scoring,
         draw_count=test.draw_count,
+        available_from=test.available_from.isoformat() if test.available_from else None,
+        available_until=test.available_until.isoformat() if test.available_until else None,
         link_token=test.link_token,
         published_at=test.published_at.isoformat() if test.published_at else None,
         blocks=[_block_out(b) for b in sorted(test.blocks, key=lambda x: x.order)],
@@ -225,6 +232,8 @@ def _test_out_detail(test: Test) -> TestDetailOut:
         passing_score_pct=test.passing_score_pct,
         multiple_select_scoring=test.multiple_select_scoring,
         draw_count=test.draw_count,
+        available_from=test.available_from.isoformat() if test.available_from else None,
+        available_until=test.available_until.isoformat() if test.available_until else None,
         link_token=test.link_token,
         published_at=test.published_at.isoformat() if test.published_at else None,
         blocks=[_block_out_detail(b) for b in sorted(test.blocks, key=lambda x: x.order)],
@@ -333,6 +342,8 @@ async def create_test(
         passing_score_pct=body.passing_score_pct,
         multiple_select_scoring=body.multiple_select_scoring,
         draw_count=body.draw_count,
+        available_from=body.available_from,
+        available_until=body.available_until,
         blocks=[],
     )
     db.add(test)
@@ -364,6 +375,8 @@ async def update_test(
     test.passing_score_pct = body.passing_score_pct
     test.multiple_select_scoring = body.multiple_select_scoring
     test.draw_count = body.draw_count
+    test.available_from = body.available_from
+    test.available_until = body.available_until
     await _apply_blocks(test, body.blocks, user.tenant_id, db)
     await db.commit()
     return _test_out(await _load_test(test_id, user.tenant_id, db))
@@ -394,6 +407,195 @@ async def delete_test(
     test = await _load_test(test_id, user.tenant_id, db)
     test.deleted_at = datetime.now(timezone.utc)
     await db.commit()
+
+
+# ── Clone ─────────────────────────────────────────────────────────────────────
+
+@router.post("/{test_id}/clone", response_model=TestOut, status_code=status.HTTP_201_CREATED)
+async def clone_test(
+    test_id: str,
+    user: User = Depends(require_role("admin", "manager")),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Duplicate a test (and all its blocks/questions) as a brand-new unpublished test.
+    Questions are cloned as new independent copies so edits don't affect the original.
+    """
+    source = await _load_test(test_id, user.tenant_id, db)
+
+    # Fetch full question data
+    all_q_ids = [bq.question_id for b in source.blocks for bq in b.block_questions]
+    questions_map: dict[str, Question] = {}
+    if all_q_ids:
+        result = await db.execute(select(Question).where(Question.id.in_(all_q_ids)))
+        for q in result.scalars():
+            questions_map[q.id] = q
+
+    new_test = Test(
+        tenant_id=user.tenant_id,
+        created_by=user.id,
+        title=f"{source.title} (copy)",
+        description=source.description,
+        mode=source.mode,
+        access=source.access,
+        time_limit_minutes=source.time_limit_minutes,
+        allow_multiple_attempts=source.allow_multiple_attempts,
+        max_attempts=source.max_attempts,
+        randomize_questions=source.randomize_questions,
+        randomize_options=source.randomize_options,
+        show_score=source.show_score,
+        show_correct_answers=source.show_correct_answers,
+        passing_score_pct=source.passing_score_pct,
+        multiple_select_scoring=source.multiple_select_scoring,
+        draw_count=source.draw_count,
+        available_from=source.available_from,
+        available_until=source.available_until,
+        blocks=[],
+    )
+    db.add(new_test)
+    await db.flush()
+
+    for block in sorted(source.blocks, key=lambda b: b.order):
+        new_block = TestBlock(
+            test_id=new_test.id,
+            order=block.order,
+            title=block.title,
+            instructions_json=block.instructions_json,
+            context_json=block.context_json,
+        )
+        db.add(new_block)
+        await db.flush()
+        for bq in sorted(block.block_questions, key=lambda x: x.order):
+            src_q = questions_map.get(bq.question_id)
+            if not src_q:
+                continue
+            new_q = Question(
+                tenant_id=user.tenant_id,
+                type=src_q.type,
+                prompt_json=src_q.prompt_json,
+                options_json=src_q.options_json,
+                correct_answer=src_q.correct_answer,
+                explanation_json=src_q.explanation_json,
+                points=src_q.points,
+                tags=src_q.tags,
+            )
+            db.add(new_q)
+            await db.flush()
+            db.add(TestBlockQuestion(block_id=new_block.id, question_id=new_q.id, order=bq.order))
+
+    await db.commit()
+    return _test_out(await _load_test(new_test.id, user.tenant_id, db))
+
+
+# ── CSV import ────────────────────────────────────────────────────────────────
+
+@router.post("/import-csv", response_model=TestOut, status_code=status.HTTP_201_CREATED)
+async def import_csv(
+    file: UploadFile = File(...),
+    user: User = Depends(require_role("admin", "manager")),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Import questions from a CSV file and create a new test.
+
+    Expected columns (header row required):
+      type, prompt, options, correct_answer, points, tags, block
+
+    - type: multiple_choice | multiple_select | true_false | short_text | long_text
+    - prompt: plain text (will be wrapped in Tiptap paragraph)
+    - options: pipe-separated list for choice types, e.g. "Paris|London|Berlin"
+    - correct_answer: single value for mc/tf ("Paris"), comma-separated for ms ("A,C"),
+                      or plain text for short_text
+    - points: integer (default 1)
+    - tags: comma-separated tag list (optional)
+    - block: block title to group questions into (optional; all go into one block if omitted)
+
+    The filename (without extension) is used as the test title.
+    """
+    data = await file.read()
+    text = data.decode("utf-8-sig")  # handle BOM from Excel exports
+    reader = csv.DictReader(io.StringIO(text))
+
+    # Group rows by block title, preserving insertion order
+    from collections import OrderedDict
+    blocks_dict: dict[str, list[dict]] = OrderedDict()
+
+    for row in reader:
+        block_title = (row.get("block") or "").strip() or "Questions"
+        if block_title not in blocks_dict:
+            blocks_dict[block_title] = []
+        blocks_dict[block_title].append(row)
+
+    if not blocks_dict:
+        raise HTTPException(status_code=400, detail="CSV file is empty or has no data rows")
+
+    # Derive test title from filename
+    test_title = "Imported Test"
+    if file.filename:
+        stem = Path(file.filename).stem
+        if stem:
+            test_title = stem.replace("_", " ").replace("-", " ").title()
+
+    test = Test(
+        tenant_id=user.tenant_id,
+        created_by=user.id,
+        title=test_title,
+        blocks=[],
+    )
+    db.add(test)
+    await db.flush()
+
+    for block_order, (block_title, rows) in enumerate(blocks_dict.items()):
+        block = TestBlock(
+            test_id=test.id,
+            order=block_order,
+            title=block_title if block_title != "Questions" else None,
+        )
+        db.add(block)
+        await db.flush()
+
+        for q_order, row in enumerate(rows):
+            qtype = (row.get("type") or "short_text").strip().lower()
+            prompt_text = (row.get("prompt") or "").strip()
+            options_raw = (row.get("options") or "").strip()
+            correct_raw = (row.get("correct_answer") or "").strip()
+            points_raw = (row.get("points") or "1").strip()
+            tags_raw = (row.get("tags") or "").strip()
+
+            # Build options_json list for choice types
+            options_json = None
+            if qtype in ("multiple_choice", "multiple_select") and options_raw:
+                options_json = [o.strip() for o in options_raw.split("|") if o.strip()]
+
+            # Build correct_answer
+            correct_answer: Any = None
+            if qtype == "multiple_choice":
+                correct_answer = {"value": correct_raw} if correct_raw else None
+            elif qtype == "multiple_select":
+                vals = [v.strip() for v in correct_raw.split(",") if v.strip()]
+                correct_answer = {"values": vals} if vals else None
+            elif qtype == "true_false":
+                correct_answer = {"value": correct_raw.lower()} if correct_raw else None
+            elif qtype == "short_text":
+                correct_answer = {"text": correct_raw} if correct_raw else None
+
+            tags = [t.strip() for t in tags_raw.split(",") if t.strip()] if tags_raw else []
+
+            q = Question(
+                tenant_id=user.tenant_id,
+                type=qtype,
+                prompt_json=_wrap_text(prompt_text),
+                options_json=options_json,
+                correct_answer=correct_answer,
+                points=int(points_raw) if points_raw.isdigit() else 1,
+                tags=tags,
+            )
+            db.add(q)
+            await db.flush()
+            db.add(TestBlockQuestion(block_id=block.id, question_id=q.id, order=q_order))
+
+    await db.commit()
+    return _test_out(await _load_test(test.id, user.tenant_id, db))
 
 
 # ── Media utilities ───────────────────────────────────────────────────────────

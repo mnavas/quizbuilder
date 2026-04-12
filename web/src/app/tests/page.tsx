@@ -284,7 +284,9 @@ export default function TestsPage() {
   const [importing, setImporting] = useState(false);
   const [importError, setImportError] = useState("");
   const [previewId, setPreviewId] = useState<string | null>(null);
+  const [cloningId, setCloningId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const csvInputRef = useRef<HTMLInputElement>(null);
 
   async function load() {
     setLoading(true);
@@ -325,6 +327,26 @@ export default function TestsPage() {
     } catch { alert("Export failed"); }
   }
 
+  async function handleClone(id: string) {
+    setCloningId(id);
+    try { await api.post(`/tests/${id}/clone`); load(); }
+    catch (e: any) { alert(e?.response?.data?.detail ?? "Clone failed"); }
+    finally { setCloningId(null); }
+  }
+
+  async function handleImportCsv(file: File) {
+    setImporting(true);
+    setImportError("");
+    try {
+      const form = new FormData();
+      form.append("file", file);
+      await api.post("/tests/import-csv", form, { headers: { "Content-Type": "multipart/form-data" } });
+      load();
+    } catch (e: any) {
+      setImportError(e?.response?.data?.detail ?? "CSV import failed — check the file format");
+    } finally { setImporting(false); }
+  }
+
   async function handleImportFile(file: File) {
     setImporting(true);
     setImportError("");
@@ -349,6 +371,12 @@ export default function TestsPage() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Tests</h1>
         <div className="flex gap-2">
+          <button onClick={() => csvInputRef.current?.click()} disabled={importing}
+            className="btn-ghost text-sm disabled:opacity-50">
+            {importing ? "Importing…" : "↑ CSV"}
+          </button>
+          <input ref={csvInputRef} type="file" accept=".csv,text/csv" className="hidden"
+            onChange={(e) => { const f = e.target.files?.[0]; if (f) handleImportCsv(f); e.target.value = ""; }} />
           <button onClick={() => fileInputRef.current?.click()} disabled={importing}
             className="btn-ghost text-sm disabled:opacity-50">
             {importing ? "Importing…" : "↑ Import"}
@@ -398,6 +426,10 @@ export default function TestsPage() {
                       <button onClick={() => handlePublish(t.id)} className="text-xs text-green-600 hover:underline">Publish</button>
                     )}
                     <Link href={`/results?test_id=${t.id}`} className="text-xs text-gray-500 hover:underline">Results</Link>
+                    <button onClick={() => handleClone(t.id)} disabled={cloningId === t.id}
+                      className="text-xs text-teal-600 hover:underline disabled:opacity-50">
+                      {cloningId === t.id ? "Cloning…" : "Clone"}
+                    </button>
                     <button onClick={() => handleExport(t.id, t.title)} className="text-xs text-indigo-500 hover:underline">↓ Export</button>
                     <button onClick={() => handleDelete(t.id)} className="text-xs text-red-500 hover:underline">Delete</button>
                   </div>

@@ -7,7 +7,7 @@ score=None means the answer requires manual review.
 from app.models.core import Question
 
 
-def score_answer(question: Question, value: dict | None) -> tuple[int | None, bool]:
+def score_answer(question: Question, value: dict | None, multiple_select_scoring: str = "all_or_nothing") -> tuple[int | None, bool]:
     """
     value is the raw answer stored in Answer.value_json.
     Returns (auto_score, needs_review).
@@ -37,7 +37,7 @@ def score_answer(question: Question, value: dict | None) -> tuple[int | None, bo
         return _score_multiple_choice(question, value)
 
     if qtype == "multiple_select":
-        return _score_multiple_select(question, value)
+        return _score_multiple_select(question, value, multiple_select_scoring)
 
     if qtype == "true_false":
         return _score_true_false(question, value)
@@ -57,10 +57,14 @@ def _score_multiple_choice(question: Question, value: dict) -> tuple[int, bool]:
     return 0, False
 
 
-def _score_multiple_select(question: Question, value: dict) -> tuple[int, bool]:
+def _score_multiple_select(question: Question, value: dict, scoring: str = "all_or_nothing") -> tuple[int, bool]:
     """
-    All-or-nothing scoring: award full points only when selected set exactly equals
-    the correct set. Partial credit is not supported yet (see plan §open-questions).
+    Score a multiple_select question.
+
+    scoring="all_or_nothing": full points only when selection exactly matches correct set.
+    scoring="partial": proportional — each correct selection earns points/total_correct,
+                       wrong selections have no penalty (score floored to integer).
+
     correct_answer may be stored as:
       {"values": [...]}  — dict form (created by the editor)
       ["A", "C"]         — bare JSON array (import format)
@@ -73,13 +77,18 @@ def _score_multiple_select(question: Question, value: dict) -> tuple[int, bool]:
     elif isinstance(correct_raw, list):
         correct = set(correct_raw)
     elif isinstance(correct_raw, str) and correct_raw.strip():
-        # Comma-separated string: "A, C" → {"A", "C"}
         correct = set(v.strip() for v in correct_raw.split(",") if v.strip())
     else:
         correct = set()
 
     if selected == correct:
         return question.points, False
+
+    if scoring == "partial" and correct:
+        correct_hits = len(selected & correct)
+        earned = int(correct_hits / len(correct) * question.points)
+        return earned, False
+
     return 0, False
 
 
