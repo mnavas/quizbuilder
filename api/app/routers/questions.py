@@ -192,7 +192,7 @@ async def update_question(
 
     q.type = body.type
     q.prompt_json = _resolve_prompt(body)
-    q.options_json = options_json
+    q.options_json = options_json  # type: ignore[assignment]
     q.correct_answer = body.correct_answer
     q.explanation_json = _resolve_explanation(body)
     q.points = body.points
