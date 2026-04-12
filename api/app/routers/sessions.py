@@ -278,7 +278,7 @@ async def start_session(
     question_out = []
     for sq in sorted(sq_list, key=lambda x: x.order):
         q = questions[sq.question_id]
-        block = q_block_map.get(sq.question_id)
+        sq_block = q_block_map.get(sq.question_id)
         # Hide correct_answer from taker response
         options = q.options_json
         if test.randomize_options and options:
@@ -291,8 +291,8 @@ async def start_session(
             options_json=options,
             points=q.points,
             order=sq.order,
-            block_title=block.title if block else None,
-            context_json=block.context_json if block else None,
+            block_title=sq_block.title if sq_block else None,
+            context_json=sq_block.context_json if sq_block else None,
         ))
 
     return SessionOut(

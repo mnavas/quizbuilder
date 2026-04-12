@@ -16,4 +16,4 @@ class Settings(BaseSettings):
         return [o.strip() for o in self.allowed_origins.split(",")]
 
 
-settings = Settings()
+settings = Settings()  # type: ignore[call-arg]

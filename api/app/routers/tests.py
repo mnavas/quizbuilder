@@ -290,8 +290,8 @@ async def _apply_blocks(test: Test, blocks_in: list[BlockIn], tenant_id: str, db
         )
         db.add(block)
         await db.flush()
-        for bq in b.questions:
-            db.add(TestBlockQuestion(block_id=block.id, question_id=bq.question_id, order=bq.order))
+        for q_in in b.questions:
+            db.add(TestBlockQuestion(block_id=block.id, question_id=q_in.question_id, order=q_in.order))
 
 
 # ── Endpoints ─────────────────────────────────────────────────────────────────
@@ -708,7 +708,7 @@ async def preview_test(
     for block in sorted(test.blocks, key=lambda b: b.order):
         questions_out = []
         for bq in sorted(block.block_questions, key=lambda x: x.order):
-            q = questions_map.get(bq.question_id)
+            q = questions_map.get(bq.question_id)  # type: ignore[assignment]
             if not q:
                 continue
             questions_out.append({
@@ -1008,7 +1008,7 @@ async def export_test_questions(
 
     questions_data = []
     for q_id in all_q_ids:
-        q = questions_map.get(q_id)
+        q = questions_map.get(q_id)  # type: ignore[assignment]
         if not q:
             continue
         media_ref = None

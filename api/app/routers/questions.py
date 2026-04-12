@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
@@ -143,7 +144,7 @@ async def create_question(
     if body.type not in ALLOWED_TYPES:
         raise HTTPException(status_code=400, detail=f"Unsupported question type: {body.type}")
 
-    options_json = None
+    options_json: Any = None
     if body.options:
         options_json = [{"id": o.id, "content_json": _wrap_text(o.text)} for o in body.options]
     elif body.media_ref:
@@ -183,7 +184,7 @@ async def update_question(
     if not q:
         raise HTTPException(status_code=404, detail="Question not found")
 
-    options_json = None
+    options_json: Any = None
     if body.options:
         options_json = [{"id": o.id, "content_json": _wrap_text(o.text)} for o in body.options]
     elif body.media_ref:
