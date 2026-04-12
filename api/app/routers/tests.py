@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile, status
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel
 from sqlalchemy import select
@@ -652,7 +652,7 @@ def _extract_text(node: Any) -> str:
     return sep.join(p for p in parts if p).strip()
 
 
-def _to_practice_bundle(test: Test, questions_map: dict[str, Question]) -> dict:
+def _to_practice_bundle(test: Test, questions_map: dict[str, Question], base_url: str) -> dict:
     """Build the normalized TestBundle payload expected by the mobile app."""
     blocks_out = []
     for block in sorted(test.blocks, key=lambda b: b.order):
@@ -662,16 +662,21 @@ def _to_practice_bundle(test: Test, questions_map: dict[str, Question]) -> dict:
             if not q:
                 continue
             options: list[dict] | None = None
+            audio_url: str | None = None
             if isinstance(q.options_json, list):
                 options = [
                     {"id": opt.get("id", ""), "text": _extract_text(opt.get("content_json"))}
                     for opt in q.options_json
                 ]
+            elif isinstance(q.options_json, dict) and q.options_json.get("media_file_id"):
+                # audio_prompt / video_prompt — build a public URL the mobile app can stream
+                audio_url = f"{base_url}/api/v1/media/{q.options_json['media_file_id']}"
             questions_out.append({
                 "id": q.id,
                 "type": q.type,
                 "prompt": q.prompt_json,
                 "options": options,
+                "audio_url": audio_url,
                 "correct_answer": q.correct_answer,
                 "points": q.points,
                 "tags": q.tags or [],
@@ -679,6 +684,7 @@ def _to_practice_bundle(test: Test, questions_map: dict[str, Question]) -> dict:
         blocks_out.append({
             "id": block.id,
             "title": block.title or "",
+            "context_json": block.context_json,
             "questions": questions_out,
         })
     return {
@@ -843,6 +849,7 @@ async def export_test(
 @router.get("/{test_id}/practice-bundle")
 async def practice_bundle(
     test_id: str,
+    request: Request,
     db: AsyncSession = Depends(get_db),
 ):
     """Public endpoint — returns the test as a practice bundle JSON for the mobile app.
@@ -867,7 +874,8 @@ async def practice_bundle(
         for q in q_result.scalars():
             questions_map[q.id] = q
 
-    return JSONResponse(content=_to_practice_bundle(test, questions_map))
+    base_url = str(request.base_url).rstrip("/")
+    return JSONResponse(content=_to_practice_bundle(test, questions_map, base_url))
 
 
 @router.post("/import", response_model=TestOut, status_code=status.HTTP_201_CREATED)

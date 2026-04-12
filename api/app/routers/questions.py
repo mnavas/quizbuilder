@@ -193,7 +193,7 @@ async def update_question(
     q.type = body.type
     q.prompt_json = _resolve_prompt(body)
     q.options_json = cast(Any, options_json)
-    q.correct_answer = body.correct_answer
+    q.correct_answer = body.correct_answer  # type: ignore[assignment]
     q.explanation_json = _resolve_explanation(body)
     q.points = body.points
     q.tags = body.tags
