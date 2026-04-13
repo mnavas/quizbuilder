@@ -690,6 +690,9 @@ def _to_practice_bundle(test: Test, questions_map: dict[str, Question]) -> dict:
         "id": test.id,
         "title": test.title,
         "show_correct_answers": test.show_correct_answers,
+        "randomize_questions": test.randomize_questions,
+        "randomize_options": test.randomize_options,
+        "draw_count": test.draw_count,
         "blocks": blocks_out,
     }
 
