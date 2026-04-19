@@ -302,6 +302,60 @@ function SharePanel({ token }: { token: string }) {
   );
 }
 
+// ── Actions dropdown ──────────────────────────────────────────────────────────
+
+function ActionsMenu({ children }: { children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="p-2 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+        aria-label="More actions"
+      >
+        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <circle cx="10" cy="4" r="1.5" /><circle cx="10" cy="10" r="1.5" /><circle cx="10" cy="16" r="1.5" />
+        </svg>
+      </button>
+      {open && (
+        <div
+          className="absolute right-0 top-9 z-20 w-52 bg-white border border-gray-200 rounded-xl shadow-lg py-1"
+          onClick={() => setOpen(false)}
+        >
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MenuItem({ onClick, href, target, label, danger, disabled }: {
+  onClick?: () => void; href?: string; target?: string;
+  label: string; danger?: boolean; disabled?: boolean;
+}) {
+  const cls = `flex w-full items-center px-4 py-2 text-sm transition-colors ${
+    danger ? "text-red-600 hover:bg-red-50" :
+    disabled ? "text-gray-300 cursor-not-allowed" :
+    "text-gray-700 hover:bg-gray-50"
+  }`;
+  if (href) return (
+    <a href={href} target={target} rel="noopener noreferrer" className={cls}>{label}</a>
+  );
+  return (
+    <button onClick={disabled ? undefined : onClick} className={cls} disabled={disabled}>{label}</button>
+  );
+}
+
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function TestsPage() {
@@ -344,16 +398,21 @@ export default function TestsPage() {
   }
 
   async function handleExport(id: string, title: string) {
-    const slug = title.toLowerCase().replace(/\s+/g, "_").slice(0, 30);
+    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "_").slice(0, 30);
     try {
       const res = await api.get(`/tests/${id}/export`, { responseType: "blob" });
-      triggerDownload(res.data, `quizbee_${slug}.json`);
-      // Offer to also download the questions JSON
-      if (window.confirm("Also download the questions bank as a separate JSON file?")) {
-        const qRes = await api.get(`/tests/${id}/export-questions`, { responseType: "blob" });
-        triggerDownload(qRes.data, `quizbee_${slug}_questions.json`);
-      }
+      const isZip = res.headers["content-type"]?.includes("zip");
+      triggerDownload(res.data, `quizbee_${slug}.${isZip ? "zip" : "json"}`);
     } catch { alert("Export failed"); }
+  }
+
+  async function handleOfflineDownload(id: string, title: string) {
+    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "_").slice(0, 30);
+    try {
+      const res = await api.get(`/tests/${id}/export`, { responseType: "blob" });
+      const isZip = res.headers["content-type"]?.includes("zip");
+      triggerDownload(res.data, `quizbee_${slug}.${isZip ? "zip" : "json"}`);
+    } catch { alert("Download failed"); }
   }
 
   async function handleClone(id: string) {
@@ -433,37 +492,55 @@ export default function TestsPage() {
           <div className="space-y-3">
             {tests.map((t) => (
               <div key={t.id} className="card space-y-2">
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-gray-900">{t.title}</p>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-semibold text-gray-900">{t.title}</p>
+                      {!t.published_at && (
+                        <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-medium">Draft</span>
+                      )}
+                      {t.practice_enabled && (
+                        <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium">📱 Practice</span>
+                      )}
+                    </div>
                     <p className="text-xs text-gray-400 mt-0.5">
                       {t.mode} · {t.access} ·{" "}
                       {t.draw_count
                         ? <span className="text-amber-600 font-medium">random · {t.draw_count} of {questionCount(t)}</span>
                         : `${questionCount(t)} questions`}
-                      {t.published_at ? " · Published" : " · Draft"}
                     </p>
                   </div>
-                  <div className="flex gap-3 shrink-0 items-center flex-wrap justify-end">
-                    <Link href={`/tests/${t.id}`} className="text-xs text-blue-600 hover:underline">Edit</Link>
-                    <button onClick={() => setPreviewId(t.id)} className="text-xs text-purple-600 hover:underline">Preview</button>
-                    {t.link_token && (
-                      <a href={`/take/${t.link_token}`} target="_blank" rel="noopener noreferrer"
-                        className="text-xs text-amber-600 hover:underline">Take</a>
-                    )}
-                    {!t.published_at && (
-                      <button onClick={() => handlePublish(t.id)} className="text-xs text-green-600 hover:underline">Publish</button>
-                    )}
-                    <Link href={`/results?test_id=${t.id}`} className="text-xs text-gray-500 hover:underline">Results</Link>
-                    <button onClick={() => handleClone(t.id)} disabled={cloningId === t.id}
-                      className="text-xs text-teal-600 hover:underline disabled:opacity-50">
-                      {cloningId === t.id ? "Cloning…" : "Clone"}
-                    </button>
-                    <button onClick={() => handleExport(t.id, t.title)} className="text-xs text-indigo-500 hover:underline">↓ Export</button>
-                    {t.practice_enabled && (
-                      <button onClick={() => setPracticeQrId(t.id)} className="text-xs text-amber-500 hover:underline">📱 Practice QR</button>
-                    )}
-                    <button onClick={() => handleDelete(t.id)} className="text-xs text-red-500 hover:underline">Delete</button>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <Link
+                      href={`/tests/${t.id}`}
+                      className="px-3 py-1.5 text-sm font-medium bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors"
+                    >
+                      Edit
+                    </Link>
+                    <ActionsMenu>
+                      <MenuItem onClick={() => setPreviewId(t.id)} label="Preview" />
+                      {t.link_token && (
+                        <MenuItem href={`/take/${t.link_token}`} target="_blank" label="Take test" />
+                      )}
+                      {!t.published_at && (
+                        <MenuItem onClick={() => handlePublish(t.id)} label="Publish" />
+                      )}
+                      <MenuItem href={`/results?test_id=${t.id}`} label="Results" />
+                      <MenuItem
+                        onClick={() => handleClone(t.id)}
+                        label={cloningId === t.id ? "Cloning…" : "Clone"}
+                        disabled={cloningId === t.id}
+                      />
+                      {t.practice_enabled && (
+                        <MenuItem onClick={() => setPracticeQrId(t.id)} label="📱 Practice QR" />
+                      )}
+                      {t.practice_enabled && (
+                        <MenuItem onClick={() => handleOfflineDownload(t.id, t.title)} label="↓ Download for app" />
+                      )}
+                      <MenuItem onClick={() => handleExport(t.id, t.title)} label="↓ Export backup" />
+                      <div className="border-t border-gray-100 my-1" />
+                      <MenuItem onClick={() => handleDelete(t.id)} label="Delete" danger />
+                    </ActionsMenu>
                   </div>
                 </div>
 
