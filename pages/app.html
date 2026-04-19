@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mobile App — Quizbee</title>
+  <meta name="description" content="Download the Quizbee Android app and practice your tests completely offline. Includes example spelling bee and driving exam bundles." />
+  <link rel="icon" type="image/png" href="../icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --amber:     #F5A623;
+      --amber-dark:#D4891A;
+      --amber-pale:#FEF3DC;
+      --gray-50:   #F9FAFB;
+      --gray-100:  #F3F4F6;
+      --gray-200:  #E5E7EB;
+      --gray-400:  #9CA3AF;
+      --gray-600:  #4B5563;
+      --gray-700:  #374151;
+      --gray-800:  #1F2937;
+      --gray-900:  #111827;
+      --white:     #FFFFFF;
+      --radius:    12px;
+      --green:     #22C55E;
+      --blue:      #3B82F6;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; color: var(--gray-800); background: var(--white); line-height: 1.6; }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.92); backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 0 2rem; height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-brand img { width: 30px; height: 30px; border-radius: 6px; }
+    .nav-brand span { font-size: 1.15rem; font-weight: 700; color: var(--amber); }
+    .nav-links { display: flex; align-items: center; gap: 2rem; }
+    .nav-links a { text-decoration: none; font-size: 0.875rem; font-weight: 500; color: var(--gray-600); transition: color 0.15s; }
+    .nav-links a:hover { color: var(--gray-900); }
+    .nav-links a.active { font-weight: 700; color: var(--amber); }
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 0.5rem 1.25rem; border-radius: 8px; font-size: 0.875rem; font-weight: 600; text-decoration: none; transition: all 0.15s; }
+    .btn-primary { background: var(--amber); color: var(--white); }
+    .btn-primary:hover { background: var(--amber-dark); }
+
+    /* PAGE HEADER */
+    .page-header {
+      background: linear-gradient(160deg, var(--amber-pale) 0%, var(--white) 60%);
+      padding: 4rem 2rem 3rem; text-align: center;
+    }
+    .page-header .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--amber-pale); border: 1px solid #F5A62360;
+      color: var(--amber-dark); font-size: 0.8rem; font-weight: 600;
+      padding: 4px 12px; border-radius: 999px; margin-bottom: 1.25rem;
+    }
+    .page-header h1 { font-size: clamp(1.75rem, 4vw, 2.75rem); font-weight: 800; color: var(--gray-900); line-height: 1.2; margin-bottom: 1rem; }
+    .page-header p { font-size: 1.05rem; color: var(--gray-600); max-width: 540px; margin: 0 auto 2rem; }
+
+    .download-hero {
+      display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;
+    }
+    .download-btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 0.875rem 1.75rem; border-radius: 12px;
+      font-size: 0.95rem; font-weight: 700; text-decoration: none;
+      transition: all 0.15s;
+    }
+    .download-btn-primary { background: var(--amber); color: #fff; }
+    .download-btn-primary:hover { background: var(--amber-dark); transform: translateY(-1px); }
+    .download-btn-ghost { background: #fff; color: var(--gray-800); border: 1.5px solid var(--gray-200); }
+    .download-btn-ghost:hover { border-color: var(--amber); color: var(--amber); transform: translateY(-1px); }
+    .download-btn svg { flex-shrink: 0; }
+
+    /* MAIN LAYOUT */
+    .page-body { max-width: 900px; margin: 0 auto; padding: 4rem 2rem 6rem; }
+
+    /* SECTION */
+    .section { margin-bottom: 4rem; scroll-margin-top: 80px; }
+    .section-tag { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--amber); margin-bottom: 0.5rem; }
+    .section h2 { font-size: clamp(1.35rem, 2.5vw, 1.85rem); font-weight: 800; color: var(--gray-900); line-height: 1.2; margin-bottom: 0.75rem; }
+    .section > p { font-size: 0.975rem; color: var(--gray-600); max-width: 640px; line-height: 1.7; margin-bottom: 2rem; }
+
+    /* STEPS */
+    .steps { display: flex; flex-direction: column; gap: 1.25rem; }
+    .step-card { display: flex; gap: 1.25rem; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius); padding: 1.5rem; }
+    .step-num { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; background: var(--amber); color: var(--white); font-weight: 700; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; }
+    .step-body h3 { font-size: 0.975rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .step-body p { font-size: 0.9rem; color: var(--gray-600); line-height: 1.65; }
+    .step-body p + p { margin-top: 0.4rem; }
+    .step-body a { color: var(--amber); text-decoration: none; font-weight: 600; }
+    .step-body a:hover { text-decoration: underline; }
+
+    /* FEATURES GRID */
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .feature-card {
+      background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius);
+      padding: 1.25rem; display: flex; flex-direction: column; gap: 0.5rem;
+    }
+    .feature-icon { font-size: 1.5rem; }
+    .feature-card h3 { font-size: 0.9rem; font-weight: 700; color: var(--gray-900); }
+    .feature-card p { font-size: 0.825rem; color: var(--gray-600); line-height: 1.55; }
+
+    /* DOWNLOAD CARDS */
+    .download-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
+    .download-card {
+      border: 1.5px solid var(--gray-200); border-radius: 16px;
+      padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;
+      background: var(--white); transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .download-card:hover { border-color: var(--amber); box-shadow: 0 4px 20px rgba(245,166,35,0.12); }
+    .download-card-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+    }
+    .icon-amber { background: var(--amber-pale); }
+    .icon-blue  { background: #EFF6FF; }
+    .download-card h3 { font-size: 1rem; font-weight: 700; color: var(--gray-900); }
+    .download-card p { font-size: 0.875rem; color: var(--gray-600); line-height: 1.6; flex: 1; }
+    .download-card-meta { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 0.72rem; font-weight: 600; padding: 3px 10px; border-radius: 999px;
+    }
+    .pill-amber { background: var(--amber-pale); color: var(--amber-dark); }
+    .pill-blue  { background: #EFF6FF; color: #1d4ed8; }
+    .pill-green { background: #DCFCE7; color: #166534; }
+    .download-card .dl-btn {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      background: var(--amber); color: #fff; border-radius: 10px;
+      padding: 0.65rem 1rem; font-size: 0.875rem; font-weight: 700;
+      text-decoration: none; transition: background 0.15s;
+    }
+    .download-card .dl-btn:hover { background: var(--amber-dark); }
+
+    /* CALLOUT */
+    .callout {
+      display: flex; gap: 0.75rem;
+      background: var(--amber-pale); border: 1px solid #F5A62340; border-left: 3px solid var(--amber);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 1rem 1.25rem; margin-top: 1.25rem;
+      font-size: 0.875rem; color: var(--gray-700); line-height: 1.6;
+    }
+    .callout-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+    .callout-info { background: #EFF6FF; border-color: #BFDBFE; border-left-color: var(--blue); }
+
+    /* DIVIDER */
+    .divider { border: none; border-top: 1px solid var(--gray-200); margin: 3.5rem 0; }
+
+    /* MODES */
+    .modes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+    .mode-card { background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius); padding: 1.25rem; }
+    .mode-card .mode-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .mode-card h3 { font-size: 0.9rem; font-weight: 700; color: var(--gray-900); margin-bottom: 0.25rem; }
+    .mode-card p { font-size: 0.825rem; color: var(--gray-600); line-height: 1.55; }
+
+    /* FOOTER */
+    footer { background: var(--gray-900); padding: 3rem 2rem; text-align: center; }
+    footer .footer-brand { display: flex; align-items: center; gap: 10px; justify-content: center; margin-bottom: 1rem; }
+    footer .footer-brand img { width: 28px; height: 28px; border-radius: 6px; }
+    footer .footer-brand span { font-size: 1rem; font-weight: 700; color: var(--amber); }
+    footer p { font-size: 0.8rem; color: var(--gray-400); margin-top: 0.5rem; }
+    footer nav { margin-top: 1.5rem; display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; }
+    footer nav a { font-size: 0.8rem; color: var(--gray-400); text-decoration: none; }
+    footer nav a:hover { color: var(--white); }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      nav { padding: 0 1rem; }
+      .nav-links .hide-mobile { display: none; }
+      .page-header { padding: 3rem 1.25rem 2rem; }
+      .page-body { padding: 2.5rem 1.25rem 4rem; }
+      .step-card { flex-direction: column; gap: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="../index.html" class="nav-brand">
+    <img src="../icon.png" alt="Quizbee" />
+    <span>Quizbee</span>
+  </a>
+  <div class="nav-links">
+    <a href="../index.html#features" class="hide-mobile">Features</a>
+    <a href="install.html">Install</a>
+    <a href="examples.html">Examples</a>
+    <a href="../index.html#services" class="hide-mobile">Services</a>
+    <a href="../index.html#support" class="hide-mobile">Support</a>
+    <a href="app.html" class="active">App</a>
+    <a href="https://github.com/mnavas/quizbee" target="_blank" class="btn btn-primary">Get started</a>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="badge">📱 Android app</div>
+  <h1>Practice anywhere, offline</h1>
+  <p>
+    The Quizbee mobile app lets students practice any test bundle without internet access.
+    Download a bundle once via QR code or file import — then study anytime, anywhere.
+  </p>
+  <div class="download-hero">
+    <a href="https://github.com/mnavas/quizbee/releases/download/v1.0.0/quizbee.apk"
+       class="download-btn download-btn-primary">
+      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 4v12m0 0l-4-4m4 4l4-4"/>
+      </svg>
+      Download APK — Android
+    </a>
+    <a href="https://github.com/mnavas/quizbee/releases/tag/v1.0.0"
+       class="download-btn download-btn-ghost">
+      <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.11.82-.26.82-.58 0-.28-.01-1.02-.01-2-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.23 1.84 1.23 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 013-.4c1.02.005 2.04.138 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.25 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22 0 1.6-.01 2.9-.01 3.29 0 .32.21.7.82.58C20.56 21.8 24 17.3 24 12 24 5.37 18.63 0 12 0z"/>
+      </svg>
+      View release on GitHub
+    </a>
+  </div>
+  <p style="margin-top:1.25rem; font-size:0.8rem; color:var(--gray-400);">
+    Android only · Version 1.0.0 · Requires Android 8.0+
+  </p>
+</div>
+
+<!-- BODY -->
+<div class="page-body">
+
+  <!-- FEATURES -->
+  <section class="section" id="features">
+    <div class="section-tag">What's included</div>
+    <h2>Everything you need to practice offline</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📶</div>
+        <h3>Fully offline</h3>
+        <p>Bundle downloaded once. Audio, images, and questions all stored on device — no internet needed to practice.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📷</div>
+        <h3>QR code import</h3>
+        <p>Scan the QR code from the admin panel to download any published test bundle instantly.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📂</div>
+        <h3>File import</h3>
+        <p>Load a <code>.zip</code> or <code>.json</code> export file from your device — no server needed.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎵</div>
+        <h3>Audio support</h3>
+        <p>Spelling bee and audio-prompt tests play audio offline. All media bundled into the ZIP.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎲</div>
+        <h3>Random draw</h3>
+        <p>Tests can draw a random subset of questions each session — great for large question banks.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Session history</h3>
+        <p>Every practice session is saved locally so you can track progress over time.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRACTICE MODES -->
+  <section class="section" id="modes">
+    <div class="section-tag">Practice modes</div>
+    <h2>Three ways to study</h2>
+    <p>Choose the mode that fits your session — from solo review to partner-assisted practice.</p>
+    <div class="modes-grid">
+      <div class="mode-card">
+        <div class="mode-icon">🃏</div>
+        <h3>Flashcard</h3>
+        <p>See the question, think of your answer, tap "Reveal" to see the correct answer. Swipe through at your own pace.</p>
+      </div>
+      <div class="mode-card">
+        <div class="mode-icon">✏️</div>
+        <h3>Self-check</h3>
+        <p>Answer multiple-choice or type your response, then submit. Instant feedback after each question.</p>
+      </div>
+      <div class="mode-card">
+        <div class="mode-icon">🤝</div>
+        <h3>Partner</h3>
+        <p>One person reads the question aloud, the other answers. The reader marks correct or incorrect after each.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- HOW TO INSTALL -->
+  <section class="section" id="install">
+    <div class="section-tag">Installation</div>
+    <h2>Installing the APK on Android</h2>
+    <p>
+      The Quizbee app is distributed as an APK (Android Package) — not through the Play Store.
+      You need to enable sideloading once, then installation works like any other app.
+    </p>
+    <div class="steps">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>Download the APK</h3>
+          <p>
+            <a href="https://github.com/mnavas/quizbee/releases/download/v1.0.0/quizbee.apk">Download quizbee.apk</a>
+            to your Android device. You can also download it to your computer first, then transfer it via USB or cloud storage.
+          </p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>Allow installation from unknown sources</h3>
+          <p>
+            On <strong>Android 8+</strong>: when you tap the APK to install, Android will prompt you to allow your browser or file manager to install apps. Tap <strong>Settings → Allow from this source</strong>, then go back and install.
+          </p>
+          <p>
+            On older Android: go to <strong>Settings → Security → Unknown sources</strong> and enable it.
+          </p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>Install and open</h3>
+          <p>
+            Tap the downloaded APK file and follow the on-screen prompts. Once installed, open <strong>Quizbee</strong> from your app drawer. No account or sign-in required.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="callout callout-info" style="margin-top:1.5rem;">
+      <span class="callout-icon">ℹ️</span>
+      <span>
+        Sideloaded apps do not receive automatic updates. Check the
+        <a href="https://github.com/mnavas/quizbee/releases" target="_blank" style="color:var(--blue);font-weight:600;">GitHub releases page</a>
+        for new versions and repeat this process to update.
+      </span>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- HOW TO GET CONTENT -->
+  <section class="section" id="loading">
+    <div class="section-tag">Loading test bundles</div>
+    <h2>Two ways to get content into the app</h2>
+
+    <div class="steps">
+      <div class="step-card">
+        <div class="step-num" style="background:#3B82F6">A</div>
+        <div class="step-body">
+          <h3>Scan a QR code from your Quizbee server</h3>
+          <p>
+            If you have a Quizbee server running, open the admin panel, navigate to your test, and click
+            <strong>Practice QR</strong>. Tap the QR button in the app, scan the code, and the bundle
+            (including all audio and media) downloads automatically.
+          </p>
+          <p>
+            The device needs to be on the same network as the server for the initial download.
+            After that, everything works offline.
+          </p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num" style="background:#7C3AED">B</div>
+        <div class="step-body">
+          <h3>Import a ZIP or JSON file</h3>
+          <p>
+            From the admin panel, open a test and use <strong>Download for app</strong> (or Export backup for JSON).
+            This creates a <code>.zip</code> file that includes the test and all audio/media files bundled together.
+          </p>
+          <p>
+            Transfer the ZIP to your device (email, AirDrop, USB, cloud storage) and tap the
+            <strong>folder icon</strong> in the app to import it. The bundle loads fully offline — no server required.
+          </p>
+          <p>
+            You can also use the ready-made example bundles below to try the app immediately — no server needed.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- EXAMPLE DOWNLOADS -->
+  <section class="section" id="examples">
+    <div class="section-tag">Ready-made bundles</div>
+    <h2>Download example test bundles</h2>
+    <p>
+      These bundles are ready to import directly into the app using the folder button.
+      No Quizbee server required — just download, transfer to your phone, and import.
+    </p>
+
+    <div class="download-grid">
+
+      <!-- Spelling Bee -->
+      <div class="download-card">
+        <div class="download-card-icon icon-amber">🐝</div>
+        <h3>Spelling Bee — Grade 5</h3>
+        <p>
+          30 common English words with pre-recorded audio. Listen to each word and type the correct spelling.
+          10 random words per session — great for daily practice.
+        </p>
+        <div class="download-card-meta">
+          <span class="pill pill-amber">📦 ZIP bundle</span>
+          <span class="pill pill-blue">🎵 Audio included</span>
+          <span class="pill pill-green">30 words · 10/session</span>
+        </div>
+        <a href="../downloads/spelling-bee-example.zip" class="dl-btn" download>
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 4v12m0 0l-4-4m4 4l4-4"/>
+          </svg>
+          Download spelling-bee.zip
+        </a>
+      </div>
+
+      <!-- Driving Exam -->
+      <div class="download-card">
+        <div class="download-card-icon icon-blue">🚗</div>
+        <h3>US Driver's License Practice</h3>
+        <p>
+          40 multiple-choice questions covering traffic signs, right of way, speed limits, parking rules, and safety.
+          5 random questions per session to quiz yourself daily until you know the rules cold.
+        </p>
+        <div class="download-card-meta">
+          <span class="pill pill-amber">📄 JSON bundle</span>
+          <span class="pill pill-green">40 questions · 5/session</span>
+          <span class="pill pill-blue">Multiple choice</span>
+        </div>
+        <a href="../downloads/driving-exam-example.json" class="dl-btn" download>
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 4v12m0 0l-4-4m4 4l4-4"/>
+          </svg>
+          Download driving-exam.json
+        </a>
+      </div>
+
+    </div>
+
+    <div class="callout" style="margin-top:1.5rem;">
+      <span class="callout-icon">💡</span>
+      <span>
+        <strong>How to load:</strong> download the file to your Android device, open Quizbee, tap the
+        <strong>folder icon</strong> (bottom right), and select the file. The bundle imports in seconds and is available offline immediately.
+        See <a href="examples.html" style="color:var(--amber-dark);font-weight:600;">Examples</a> for how to create your own bundles with Python or AI.
+      </span>
+    </div>
+  </section>
+
+</div><!-- /page-body -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <img src="../icon.png" alt="Quizbee" />
+    <span>Quizbee</span>
+  </div>
+  <p>Self-hosted online assessment platform</p>
+  <nav>
+    <a href="https://github.com/mnavas/quizbee">GitHub</a>
+    <a href="install.html">Documentation</a>
+    <a href="examples.html">Examples</a>
+    <a href="app.html">App</a>
+    <a href="../index.html#services">Services</a>
+    <a href="../index.html#support">Support</a>
+    <a href="../LICENSE">License</a>
+    <a href="https://github.com/mnavas/quizbee/issues">Issues</a>
+  </nav>
+</footer>
+
+</body>
+</html>

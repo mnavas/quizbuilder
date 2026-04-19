@@ -1,0 +1,4061 @@
+{
+  "quizbee_version": "1.0",
+  "exported_at": "2026-04-19T17:24:42.186679+00:00",
+  "test": {
+    "title": "US Driver's License Practice Exam",
+    "description": "40 multiple-choice questions covering traffic signs, right of way, speed limits, safety rules, and more. 5 random questions per session.",
+    "mode": "practice",
+    "access": "public",
+    "time_limit_minutes": null,
+    "allow_multiple_attempts": true,
+    "max_attempts": null,
+    "randomize_questions": true,
+    "randomize_options": true,
+    "show_correct_answers": "at_end",
+    "passing_score_pct": 70,
+    "multiple_select_scoring": "all_or_nothing",
+    "draw_count": 5,
+    "blocks": [
+      {
+        "title": "Question 1",
+        "order": 0,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Driving while impaired by any substance is:"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Illegal and dangerous regardless of the substance"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Only illegal over the BAC limit"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Only illegal with alcohol"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Legal if prescribed by a doctor"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "A",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 2",
+        "order": 1,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "In rain or poor visibility, your following distance should:"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Match the car ahead"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Reduce to 1 second"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Stay the same"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Double to at least 6 seconds"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "D",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 3",
+        "order": 2,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "You may use the HOV (carpool) lane when:"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "You are late"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "The lane is empty"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Driving a hybrid"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Your vehicle has the minimum required number of occupants"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "D",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 4",
+        "order": 3,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "A pedestrian is crossing in a marked crosswalk. You must:"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Speed up to clear the intersection"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Stop and yield until they have cleared your lane"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Honk to warn them"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Proceed if they are on the other side"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "B",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 5",
+        "order": 4,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "How far from a fire hydrant must you park?"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "10 feet"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "25 feet"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "5 feet"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "15 feet"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "D",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 6",
+        "order": 5,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "For drivers under 21, the BAC limit is typically:"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "0.06%"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "0.08%"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "0.00–0.02% (zero tolerance)"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "0.04%"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "C",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 7",
+        "order": 6,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "What does a green arrow signal mean?"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "You may go in the direction of the arrow"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Stop and wait"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Right of way is shared"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Yield to pedestrians"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "A",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 8",
+        "order": 7,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Hydroplaning occurs when:"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Tires are underinflated"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Brakes overheat"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Tires lose contact with the road surface due to water"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "The engine stalls in water"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "C",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 9",
+        "order": 8,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Children under what age/weight typically require a car seat or booster?"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "12 years"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "10 years or 80 lbs"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "8 years or 4'9\" tall"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "5 years or 40 lbs"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "C",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 10",
+        "order": 9,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "In most US states, the legal blood alcohol concentration (BAC) limit for drivers 21+ is:"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "0.08%"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "0.10%"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "0.05%"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "0.02%"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "A",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 11",
+        "order": 10,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "When should you use your horn?"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "To signal a turn"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "To greet other drivers"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Only to warn others of danger"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "When frustrated in traffic"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "C",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 12",
+        "order": 11,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Seat belts are required for:"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Only front-seat passengers"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Only the driver"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Only passengers under 18"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "All occupants in most states"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "D",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 13",
+        "order": 12,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "A white rectangular sign gives:"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Warning of hazards"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Guide information"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Regulatory information (laws)"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Construction zone rules"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "C",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 14",
+        "order": 13,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "A flashing yellow light means:"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Slow down and proceed with caution"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Yield to oncoming traffic"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Lane is closed"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Stop completely"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "A",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 15",
+        "order": 14,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "What shape is a yield sign?"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Diamond"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Octagon"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Circle"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Triangle (pointing down)"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "D",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 16",
+        "order": 15,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Which of the following affects your ability to drive?"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Illegal drugs"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Prescription medications"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "All of the above"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Alcohol"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "C",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 17",
+        "order": 16,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "At a four-way stop, who goes first?"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "The driver on the left"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "The driver who arrived first"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "The driver going straight"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "The driver on the right"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "B",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 18",
+        "order": 17,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "When entering a highway from an on-ramp, you must:"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Stop at the end of the ramp"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Flash your lights"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Have the right of way over highway traffic"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Yield to highway traffic and merge safely"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "D",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 19",
+        "order": 18,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "An emergency vehicle with lights and siren is approaching. You must:"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Pull to the right and stop"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Speed up to clear the road"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Slow down by 10 mph"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Stop in your current lane"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "A",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 20",
+        "order": 19,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "When parallel parking, you should be within how many inches of the curb?"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "6 inches"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "24 inches"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "12 inches"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "18 inches"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "D",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 21",
+        "order": 20,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "What does an octagonal red sign mean?"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "No entry"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Stop completely"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Yield"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Slow down"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "B",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 22",
+        "order": 21,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "What does a pennant-shaped sign mean?"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Speed limit change"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Lane ends"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Merge ahead"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "No passing zone"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "D",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 23",
+        "order": 22,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "When driving in fog, you should use:"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Low-beam headlights"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "No lights"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "High-beam headlights"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Hazard lights while driving"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "A",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 24",
+        "order": 23,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "What does a flashing red light mean?"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Slow down"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Stop, then proceed when safe"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Road is closed"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Proceed with caution"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "B",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 25",
+        "order": 24,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "If your brakes fail, the first thing you should do is:"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Pump the brakes rapidly and downshift"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Pull the parking brake hard"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Steer off the road immediately"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Turn off the engine"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "A",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 26",
+        "order": 25,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "What is the basic speed law?"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Always drive the posted speed limit exactly"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Drive at a speed safe for conditions, never faster than is reasonable"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Drive 5 mph under the speed limit"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Match the speed of surrounding traffic"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "B",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 27",
+        "order": 26,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "You must not park within how many feet of a stop sign?"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "10 feet"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "30 feet"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "15 feet"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "50 feet"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "B",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 28",
+        "order": 27,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "What is the typical minimum following distance in good conditions?"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "3 seconds"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "10 feet per 10 mph"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "1 second"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "5 seconds"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "A",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 29",
+        "order": 28,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "In a residential area with no posted speed limit, you should drive:"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "35 mph"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "15 mph"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "25 mph or less"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Match surrounding traffic"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "C",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 30",
+        "order": 29,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "When two cars arrive at a four-way stop at the same time, who yields?"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "The slower car yields"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Both stop indefinitely"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "The driver on the left yields to the driver on the right"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "The driver on the right yields to the left"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "C",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 31",
+        "order": 30,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "Before changing lanes, you should:"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Signal and move immediately"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Signal, check mirrors, check blind spot, then move"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Check mirrors only"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Move then signal"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "B",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 32",
+        "order": 31,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "A diamond-shaped sign indicates:"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Warning / hazard ahead"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Stop ahead"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "School zone"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Speed limit"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "A",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 33",
+        "order": 32,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "The speed limit in a school zone when children are present is typically:"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "15–25 mph"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "45 mph"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "10 mph"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "35 mph"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "A",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 34",
+        "order": 33,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "A broken yellow center line means:"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Passing is permitted when safe"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "No passing allowed"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Road is one-way"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Bike lane ahead"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "A",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 35",
+        "order": 34,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "You may not make a U-turn:"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "On a two-lane road"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "In a residential area"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "At an intersection with no sign prohibiting it"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Near the top of a hill or curve where visibility is limited"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "D",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 36",
+        "order": 35,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "When a school bus is stopped with flashing red lights, you must:"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Stop regardless of direction (unless divided highway)"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Stop only if you are going the same direction"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Stop only if behind the bus"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Slow to 15 mph"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "A",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 37",
+        "order": 36,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "When must you use your headlights?"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Only in rain"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Only on highways"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "From sunset to sunrise and when visibility is under 1000 feet"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Only at night"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "C",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 38",
+        "order": 37,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "When turning left at an intersection, you must yield to:"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Only pedestrians"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Only oncoming traffic"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Oncoming traffic and pedestrians"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "No one if the light is green"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "C",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 39",
+        "order": 38,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "What does a solid yellow center line mean?"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "No passing in either direction"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Lane is closed"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Passing allowed in both directions"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Passing allowed on the left"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "A",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Question 40",
+        "order": 39,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "A curb painted red means:"
+                    }
+                  ]
+                }
+              ]
+            },
+            "options_json": [
+              {
+                "id": "A",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "No stopping, standing, or parking"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "B",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Parking for 30 minutes"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "C",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Loading zone"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "D",
+                "content_json": {
+                  "type": "doc",
+                  "content": [
+                    {
+                      "type": "paragraph",
+                      "content": [
+                        {
+                          "type": "text",
+                          "text": "Handicap parking only"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ],
+            "correct_answer": "A",
+            "explanation_json": null,
+            "media_ref": null,
+            "points": 1,
+            "tags": [
+              "driving"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
