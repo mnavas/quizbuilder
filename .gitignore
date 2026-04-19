@@ -3,6 +3,9 @@
 # Development plans, roadmap, business analysis — not for public consumption
 versioning/
 
+# Mobile practice app — private source, built separately via EAS
+mobile/
+
 # ── Environment & secrets ─────────────────────────────────────────────────────
 .env
 .env.*
