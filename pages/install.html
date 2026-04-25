@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Install Quizbee — Step-by-step Guide</title>
-  <meta name="description" content="Install Quizbee on Windows, Mac, or Linux in minutes. No technical experience required — just follow the steps." />
+  <title>Install QuizBuilder — Step-by-step Guide</title>
+  <meta name="description" content="Install QuizBuilder on Windows, Mac, or Linux in minutes. No technical experience required — just follow the steps." />
   <link rel="icon" type="image/png" href="../icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -264,8 +264,8 @@
 <!-- ── NAV ── -->
 <nav>
   <a href="../index.html" class="nav-brand">
-    <img src="../icon.png" alt="Quizbee" />
-    <span>Quizbee</span>
+    <img src="../icon.png" alt="QuizBuilder" />
+    <span>QuizBuilder</span>
   </a>
   <div class="nav-links">
     <a href="../index.html#features" class="hide-mobile">Features</a>
@@ -281,8 +281,8 @@
 <!-- ── PAGE HEADER ── -->
 <div class="page-header">
   <div class="badge">🐝 Installation guide</div>
-  <h1>Install Quizbee on your computer</h1>
-  <p>No technical experience needed. Follow these steps and you'll have Quizbee running in about 10 minutes.</p>
+  <h1>Install QuizBuilder on your computer</h1>
+  <p>No technical experience needed. Follow these steps and you'll have QuizBuilder running in about 10 minutes.</p>
 </div>
 
 <!-- ── TOC BAR ── -->
@@ -305,7 +305,7 @@
   <section class="install-section" id="prereqs">
     <h2>Step 1 — Install the prerequisites</h2>
     <p>
-      Quizbee runs inside <strong>Docker</strong>, a tool that packages everything the app needs into
+      QuizBuilder runs inside <strong>Docker</strong>, a tool that packages everything the app needs into
       self-contained containers. You only need to install Docker — it brings all other dependencies with it.
     </p>
 
@@ -462,9 +462,9 @@ docker compose version</pre></div>
        STEP 2 — DOWNLOAD
   ══════════════════════════════════════════════ -->
   <section class="install-section" id="download">
-    <h2>Step 2 — Download Quizbee</h2>
+    <h2>Step 2 — Download QuizBuilder</h2>
     <p>
-      You need to download the Quizbee files to your computer.
+      You need to download the QuizBuilder files to your computer.
       There are two ways: with Git (recommended) or by downloading a ZIP.
     </p>
 
@@ -475,7 +475,7 @@ docker compose version</pre></div>
         <div class="step-body">
           <h3>Option A — Download with Git (recommended)</h3>
           <p>
-            In your terminal, navigate to the folder where you want to install Quizbee.
+            In your terminal, navigate to the folder where you want to install QuizBuilder.
             For example, to put it in your Documents folder:
           </p>
           <div class="code-wrap"><pre><span class="cm"># Windows (Command Prompt)</span>
@@ -483,7 +483,7 @@ cd %USERPROFILE%\Documents
 
 <span class="cm"># Mac / Linux</span>
 cd ~/Documents</pre></div>
-          <p style="margin-top:0.5rem;">Then download Quizbee:</p>
+          <p style="margin-top:0.5rem;">Then download QuizBuilder:</p>
           <div class="code-wrap"><pre>git clone https://github.com/mnavas/quizbee.git
 cd quizbee</pre></div>
           <div class="callout callout-info" style="margin-top:0.75rem;">
@@ -492,7 +492,7 @@ cd quizbee</pre></div>
               Don't have Git? On Windows you can install it from <a href="https://git-scm.com/download/win" target="_blank">git-scm.com</a>.
               On Mac it's usually already installed — if not, run <code>git --version</code> and follow the prompt.
               On Linux: <code>sudo apt install git</code> (Ubuntu/Debian) or <code>sudo dnf install git</code> (Fedora).
-              <br><br>Using Git also makes it easy to <strong>update Quizbee later</strong> — see the Quick Reference at the bottom of this page.
+              <br><br>Using Git also makes it easy to <strong>update QuizBuilder later</strong> — see the Quick Reference at the bottom of this page.
             </span>
           </div>
         </div>
@@ -503,12 +503,12 @@ cd quizbee</pre></div>
         <div class="step-body">
           <h3>Option B — Download as ZIP</h3>
           <p>
-            Go to <a href="https://github.com/mnavas/quizbee" target="_blank">github.com/mnavas/quizbee</a>,
+            Go to <a href="https://github.com/mnavas/quizbee" target="_blank">github.com/mnavas/QuizBuilder</a>,
             click the green <strong>Code</strong> button, then click <strong>Download ZIP</strong>.
           </p>
           <p>
             Extract the ZIP to your Documents folder (or wherever you prefer).
-            You'll have a folder called <code>quizbee-main</code> — open a terminal inside that folder.
+            You'll have a folder called <code>QuizBuilder-main</code> — open a terminal inside that folder.
           </p>
         </div>
       </div>
@@ -524,7 +524,7 @@ cd quizbee</pre></div>
   <section class="install-section" id="configure">
     <h2>Step 3 — Set your passwords</h2>
     <p>
-      Quizbee needs a configuration file with your passwords and a security key.
+      QuizBuilder needs a configuration file with your passwords and a security key.
       This takes about two minutes.
     </p>
 
@@ -534,14 +534,14 @@ cd quizbee</pre></div>
         <div class="step-num">1</div>
         <div class="step-body">
           <h3>Copy the configuration template</h3>
-          <p>In your terminal (inside the quizbee folder), run:</p>
+          <p>In your terminal (inside the QuizBuilder folder), run:</p>
           <div class="code-wrap"><pre><span class="cm"># Windows</span>
 copy .env.example .env
 
 <span class="cm"># Mac / Linux</span>
 cp .env.example .env</pre></div>
           <p style="margin-top:0.5rem;">
-            This creates a file called <code>.env</code> in the quizbee folder.
+            This creates a file called <code>.env</code> in the QuizBuilder folder.
           </p>
         </div>
       </div>
@@ -609,7 +609,7 @@ openssl rand -hex 32</pre></div>
        STEP 4 — START
   ══════════════════════════════════════════════ -->
   <section class="install-section" id="start">
-    <h2>Step 4 — Start Quizbee</h2>
+    <h2>Step 4 — Start QuizBuilder</h2>
     <p>
       One command builds and starts everything — the database, the API server, and the web interface.
       The first run takes a few minutes because Docker downloads the required software.
@@ -621,10 +621,10 @@ openssl rand -hex 32</pre></div>
         <div class="step-num">1</div>
         <div class="step-body">
           <h3>Start the server</h3>
-          <p>In your terminal, inside the quizbee folder, run:</p>
+          <p>In your terminal, inside the QuizBuilder folder, run:</p>
           <div class="code-wrap"><pre>docker compose up -d</pre></div>
           <p style="margin-top:0.5rem;">
-            The <code>-d</code> flag runs Quizbee in the background so it keeps running even
+            The <code>-d</code> flag runs QuizBuilder in the background so it keeps running even
             after you close the terminal.
           </p>
           <p>
@@ -637,13 +637,13 @@ openssl rand -hex 32</pre></div>
       <div class="step-card">
         <div class="step-num">2</div>
         <div class="step-body">
-          <h3>Open Quizbee in your browser</h3>
+          <h3>Open QuizBuilder in your browser</h3>
           <p>
             Once the command finishes, open your browser and go to:
           </p>
           <div class="code-wrap"><pre>http://localhost:3000</pre></div>
           <p style="margin-top:0.5rem;">
-            You should see the Quizbee login page. Log in with the
+            You should see the QuizBuilder login page. Log in with the
             <strong>ADMIN_EMAIL</strong> and <strong>ADMIN_PASSWORD</strong> you set in Step 3.
           </p>
         </div>
@@ -678,7 +678,7 @@ hostname -I</pre></div>
     <div class="callout callout-success" style="margin-top:1.5rem;">
       <span class="callout-icon">✅</span>
       <span>
-        <strong>Quizbee is running!</strong> Head to <a href="examples.html" style="color:var(--green);">Examples</a>
+        <strong>QuizBuilder is running!</strong> Head to <a href="examples.html" style="color:var(--green);">Examples</a>
         to learn how to create your first test. You can also explore the Tests, Users, and Settings menus in the admin panel.
       </span>
     </div>
@@ -692,7 +692,7 @@ hostname -I</pre></div>
   <section class="install-section" id="quickref">
     <h2>Quick reference — daily commands</h2>
     <p>
-      All commands are run from the terminal inside the <code>quizbee</code> folder.
+      All commands are run from the terminal inside the <code>QuizBuilder</code> folder.
     </p>
 
     <div class="quick-ref">
@@ -742,9 +742,9 @@ hostname -I</pre></div>
     <div class="callout callout-info" style="margin-top:1.5rem;">
       <span class="callout-icon">💡</span>
       <span>
-        <strong>Want Quizbee to start automatically when your computer boots?</strong>
+        <strong>Want QuizBuilder to start automatically when your computer boots?</strong>
         The <code>restart: unless-stopped</code> setting in the configuration means Docker will
-        restart Quizbee automatically after a reboot — as long as Docker Desktop itself starts at login.
+        restart QuizBuilder automatically after a reboot — as long as Docker Desktop itself starts at login.
         On Windows and Mac, enable <strong>"Start Docker Desktop when you log in"</strong> in
         Docker Desktop Settings → General.
       </span>
@@ -766,8 +766,8 @@ function switchOS(os, btn) {
 <!-- ── FOOTER ── -->
 <footer>
   <div class="footer-brand">
-    <img src="../icon.png" alt="Quizbee" />
-    <span>Quizbee</span>
+    <img src="../icon.png" alt="QuizBuilder" />
+    <span>QuizBuilder</span>
   </div>
   <p>Self-hosted online assessment platform</p>
   <nav>

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Examples — Quizbee</title>
-  <meta name="description" content="Step-by-step examples for creating tests in Quizbee: spelling bee via JSON import, via Python script, and with AI assistance." />
+  <title>Examples — QuizBuilder</title>
+  <meta name="description" content="Step-by-step examples for creating tests in QuizBuilder: spelling bee via JSON import, via Python script, and with AI assistance." />
   <link rel="icon" type="image/png" href="../icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -292,8 +292,8 @@
 <!-- ── NAV ── -->
 <nav>
   <a href="../index.html" class="nav-brand">
-    <img src="../icon.png" alt="Quizbee" />
-    <span>Quizbee</span>
+    <img src="../icon.png" alt="QuizBuilder" />
+    <span>QuizBuilder</span>
   </a>
   <div class="nav-links">
     <a href="../index.html#features" class="hide-mobile">Features</a>
@@ -310,7 +310,7 @@
 <div class="page-header">
   <div class="badge">🐝 Practical examples</div>
   <h1>Building your first tests</h1>
-  <p>Four ways to get content into Quizbee — from a simple CSV spreadsheet to AI-assisted bulk creation.</p>
+  <p>Four ways to get content into QuizBuilder — from a simple CSV spreadsheet to AI-assisted bulk creation.</p>
 </div>
 
 <!-- ── TOC BAR ── -->
@@ -335,7 +335,7 @@
     <div class="method-badge method-import">📥 JSON import</div>
     <h2>Spelling bee — import a pre-built JSON file</h2>
     <p>
-      The fastest way to get a spelling bee into Quizbee is to import a JSON test bundle.
+      The fastest way to get a spelling bee into QuizBuilder is to import a JSON test bundle.
       Each word gets one block: an audio context (uploaded separately) and a short-text question
       auto-scored against the correct spelling.
     </p>
@@ -347,7 +347,7 @@
         <div class="step-body">
           <h3>Prepare the JSON file</h3>
           <p>
-            A Quizbee test export is a single JSON object. The <code>blocks</code> array holds groups of questions.
+            A QuizBuilder test export is a single JSON object. The <code>blocks</code> array holds groups of questions.
             For a spelling bee each block has one word, one optional audio context, and one <code>short_text</code> question.
           </p>
           <div class="code-wrap"><pre>{
@@ -398,7 +398,7 @@
             <span class="callout-icon">💡</span>
             <span>
               Set <code>review_required: false</code> on <code>short_text</code> questions to enable instant auto-scoring.
-              Quizbee compares the answer case-insensitively and trims whitespace.
+              QuizBuilder compares the answer case-insensitively and trims whitespace.
             </span>
           </div>
         </div>
@@ -410,7 +410,7 @@
           <h3>Import the file in the admin panel</h3>
           <p>
             Go to <strong>Tests → Import</strong>, select your JSON file, and click <strong>Import</strong>.
-            Quizbee creates the test with all blocks and questions. The test is saved as a draft — no takers can access it yet.
+            QuizBuilder creates the test with all blocks and questions. The test is saved as a draft — no takers can access it yet.
           </p>
         </div>
       </div>
@@ -463,7 +463,7 @@
     <h2>Any quiz — import from a spreadsheet</h2>
     <p>
       If you already have questions in a spreadsheet (Excel, Google Sheets, Numbers), you can export as CSV
-      and import directly into Quizbee. One test is created automatically, with questions grouped by the
+      and import directly into QuizBuilder. One test is created automatically, with questions grouped by the
       optional <strong>block</strong> column.
     </p>
 
@@ -518,7 +518,7 @@ short_text,Spell the name of the capital of Japan.,,Tokyo,1,spelling,Asia</pre>
         <div class="step-body">
           <h3>Import the file</h3>
           <p>In the admin panel, go to <strong>Tests</strong> and click the <strong>↑ CSV</strong> button in the top-right corner.</p>
-          <p>Select your <code>.csv</code> file. Quizbee creates a new unpublished test named after the filename, with all questions grouped into blocks matching the <code>block</code> column.</p>
+          <p>Select your <code>.csv</code> file. QuizBuilder creates a new unpublished test named after the filename, with all questions grouped into blocks matching the <code>block</code> column.</p>
           <p>After import: review the test, edit any question that needs adjusting, then click <strong>Publish</strong> to make it live.</p>
           <div class="callout callout-info">
             <span class="callout-icon">💡</span>
@@ -544,7 +544,7 @@ short_text,Spell the name of the capital of Japan.,,Tokyo,1,spelling,Asia</pre>
     <h2>Spelling bee — bulk create with <code>seed_audio.py</code></h2>
     <p>
       The <code>examples/seed_audio.py</code> script automates the full pipeline: it creates a test, adds a block per word,
-      generates or loads an MP3 for each word, uploads it, and wires the audio to the block — all via the Quizbee REST API.
+      generates or loads an MP3 for each word, uploads it, and wires the audio to the block — all via the QuizBuilder REST API.
       No manual clicking required.
     </p>
 
@@ -554,10 +554,10 @@ short_text,Spell the name of the capital of Japan.,,Tokyo,1,spelling,Asia</pre>
         <div class="step-num">1</div>
         <div class="step-body">
           <h3>Install dependencies</h3>
-          <div class="code-wrap"><pre><span class="cm"># Inside the quizbee/examples/ directory</span>
+          <div class="code-wrap"><pre><span class="cm"># Inside the QuizBuilder/examples/ directory</span>
 pip install requests gtts</pre></div>
           <p style="margin-top:0.5rem;">
-            <code>requests</code> calls the Quizbee API. <code>gtts</code> (Google Text-to-Speech) generates MP3 files
+            <code>requests</code> calls the QuizBuilder API. <code>gtts</code> (Google Text-to-Speech) generates MP3 files
             on the fly when no local audio is available. If you have your own MP3s, <code>gtts</code> is optional.
           </p>
         </div>
@@ -568,7 +568,7 @@ pip install requests gtts</pre></div>
         <div class="step-body">
           <h3>Run with auto-generated speech (gTTS)</h3>
           <p>
-            The simplest invocation — just provide your Quizbee URL, admin credentials, and a word list.
+            The simplest invocation — just provide your QuizBuilder URL, admin credentials, and a word list.
             The script calls Google TTS for each word and uploads the result.
           </p>
           <div class="code-wrap"><pre>python seed_audio.py \
@@ -645,9 +645,9 @@ python seed_audio.py \
     <div class="method-badge method-ai">🤖 AI-assisted</div>
     <h2>Let an AI build the test for you</h2>
     <p>
-      Any capable AI (Claude, ChatGPT, Gemini) can generate a complete Quizbee-compatible JSON file from a description.
+      Any capable AI (Claude, ChatGPT, Gemini) can generate a complete QuizBuilder-compatible JSON file from a description.
       You describe the test; the AI produces the JSON; you import it. This works for spelling bees, multiple-choice exams,
-      reading comprehension — anything Quizbee supports.
+      reading comprehension — anything QuizBuilder supports.
     </p>
 
     <div class="steps">
@@ -657,12 +657,12 @@ python seed_audio.py \
         <div class="step-body">
           <h3>Give the AI the format specification</h3>
           <p>
-            The AI needs to know the exact JSON structure Quizbee expects. Paste the following context at the top of your prompt:
+            The AI needs to know the exact JSON structure QuizBuilder expects. Paste the following context at the top of your prompt:
           </p>
           <div class="prompt-box">
             <div class="prompt-label">System context — paste this to the AI first</div>
             <p>
-              You are generating test data for the <span class="prompt-highlight">Quizbee</span> self-hosted assessment platform.
+              You are generating test data for the <span class="prompt-highlight">QuizBuilder</span> self-hosted assessment platform.
               Output a single valid JSON object matching this schema exactly:
             </p>
             <div class="code-wrap" style="margin-top:0.75rem;"><pre>{
@@ -723,7 +723,7 @@ python seed_audio.py \
           <div class="prompt-box" style="margin-top:0.75rem;">
             <div class="prompt-label">Example prompt — spelling bee</div>
             <p>
-              Create a Quizbee JSON test called <span class="prompt-highlight">"Grade 4 Spelling Bee — Spring 2026"</span>
+              Create a QuizBuilder JSON test called <span class="prompt-highlight">"Grade 4 Spelling Bee — Spring 2026"</span>
               with 20 words. Use <code>short_text</code> questions with <code>review_required: false</code>.
               Each block should be titled "Word 1", "Word 2", etc.
               The question prompt in every block should be: <em>"Listen and type the word you hear."</em>
@@ -734,7 +734,7 @@ python seed_audio.py \
           <div class="prompt-box" style="margin-top:0.75rem;">
             <div class="prompt-label">Example prompt — mixed exam</div>
             <p>
-              Create a Quizbee JSON test called <span class="prompt-highlight">"Biology 101 — Chapter 3 Quiz"</span>.
+              Create a QuizBuilder JSON test called <span class="prompt-highlight">"Biology 101 — Chapter 3 Quiz"</span>.
               20 questions. Mix: 10 multiple choice (4 options each), 5 true/false, 5 short_text auto-scored.
               Each block should have one question. Topic: cell biology (organelles, mitosis, photosynthesis).
               1 point per question. Show correct answers. Time limit: 30 minutes.
@@ -849,14 +849,14 @@ python seed_audio.py \
         <li><strong>Paste it</strong> as your first message to the AI (or as the system prompt).</li>
         <li><strong>Follow up</strong> in the same chat with your test request, e.g. <em>"Create a 20-word Grade 4 spelling bee"</em> or <em>"Make a 15-question biology multiple choice quiz"</em>.</li>
         <li><strong>Save</strong> the AI's output as <code>mytest.json</code>.</li>
-        <li><strong>Import</strong> it in Quizbee: Tests → Import → select the file.</li>
+        <li><strong>Import</strong> it in QuizBuilder: Tests → Import → select the file.</li>
       </ol>
     </div>
 
     <div class="copy-wrap">
       <div class="code-wrap" id="agent-ctx-block"><pre>
-You are a test builder for Quizbee, a self-hosted assessment platform.
-Your only job is to output a single valid JSON object that can be imported directly into Quizbee.
+You are a test builder for QuizBuilder, a self-hosted assessment platform.
+Your only job is to output a single valid JSON object that can be imported directly into QuizBuilder.
 Output ONLY the JSON — no markdown fences, no explanation, no extra text.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -1080,8 +1080,8 @@ function copyAgentCtx(btn) {
 <!-- ── FOOTER ── -->
 <footer>
   <div class="footer-brand">
-    <img src="../icon.png" alt="Quizbee" />
-    <span>Quizbee</span>
+    <img src="../icon.png" alt="QuizBuilder" />
+    <span>QuizBuilder</span>
   </div>
   <p>Self-hosted online assessment platform</p>
   <nav>
