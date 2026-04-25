@@ -5,6 +5,37 @@ import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import RichTextEditor from "@/components/RichTextEditor";
 import RichTextViewer, { tiptapToText } from "@/components/RichTextViewer";
+import {
+  DndContext, closestCenter, KeyboardSensor, PointerSensor,
+  useSensor, useSensors, type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy,
+  useSortable, arrayMove,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
+// ── Drag-and-drop helpers ─────────────────────────────────────────────────────
+
+const BLOCK_COLORS = ["#f59e0b","#3b82f6","#10b981","#8b5cf6","#f43f5e","#06b6d4","#f97316","#84cc16"];
+
+function SortableItem({
+  id, children,
+}: {
+  id: string;
+  children: (dragHandle: Record<string, unknown>) => React.ReactNode;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+  return (
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.4 : 1 }}
+      {...attributes}
+    >
+      {children(listeners ?? {})}
+    </div>
+  );
+}
 
 // ── Block context editor (collapsible) ────────────────────────────────────────
 
@@ -58,7 +89,6 @@ function BlockContextEditor({ value, onChange, editorKey, blockTitle }: {
       {open && (
         <div className="px-3 pb-3 pt-3 border-t border-gray-100 space-y-2">
           {isMediaContext ? (
-            /* Media file set — show badge + replace/remove */
             <>
               <div className="flex items-center gap-2 bg-gray-50 rounded px-3 py-2">
                 <span className="text-gray-500 text-sm">{mediaType === "audio" ? "♪" : "▶"}</span>
@@ -75,7 +105,6 @@ function BlockContextEditor({ value, onChange, editorKey, blockTitle }: {
               {uploadError && <p className="text-xs text-red-500">{uploadError}</p>}
             </>
           ) : (
-            /* Text passage + upload option */
             <>
               <RichTextEditor
                 key={`ctx-${editorKey}`}
@@ -195,19 +224,31 @@ export default function TestForm({ testId }: Props) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  // Inline question form
   const [qForm, setQForm] = useState<QFormState | null>(null);
   const [qSaving, setQSaving] = useState(false);
   const [qError, setQError] = useState("");
   const [editorKey, setEditorKey] = useState(0);
+  const [formOpenCount, setFormOpenCount] = useState(0);
+  const inlineFormRef = useRef<HTMLDivElement>(null);
 
-  // Bulk import
   const [importingQuestions, setImportingQuestions] = useState(false);
   const [importQMsg, setImportQMsg] = useState("");
   const importQRef = useRef<HTMLInputElement>(null);
 
   const isRandomMode = !!settings.draw_count;
   const totalQuestions = blocks.reduce((n, b) => n + b.questions.length, 0);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+
+  // Scroll inline form into view whenever it opens
+  useEffect(() => {
+    if (formOpenCount > 0) {
+      setTimeout(() => inlineFormRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }), 60);
+    }
+  }, [formOpenCount]);
 
   useEffect(() => {
     if (!testId) return;
@@ -252,32 +293,81 @@ export default function TestForm({ testId }: Props) {
   }
 
   function removeBlock(i: number) {
+    if (qForm?.blockIdx === i) setQForm(null);
     setBlocks(blocks.filter((_, idx) => idx !== i));
   }
 
   function removeQuestionFromBlock(blockIdx: number, qId: string) {
+    if (qForm?.editingId === qId) setQForm(null);
     setBlocks(blocks.map((b, i) =>
       i !== blockIdx ? b : { ...b, questions: b.questions.filter((q) => q.question_id !== qId) }
     ));
   }
 
-  function moveBlock(i: number, dir: number) {
-    const j = i + dir;
-    if (j < 0 || j >= blocks.length) return;
-    const next = [...blocks];
-    [next[i], next[j]] = [next[j], next[i]];
-    setBlocks(next);
+  function handleBlockDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    setBlocks((prev) => {
+      const oldIdx = prev.findIndex((_, i) => `blk-${i}` === active.id);
+      const newIdx = prev.findIndex((_, i) => `blk-${i}` === over.id);
+      if (oldIdx < 0 || newIdx < 0) return prev;
+      return arrayMove(prev, oldIdx, newIdx);
+    });
   }
 
-  function moveQuestion(blockIdx: number, qIdx: number, dir: number) {
-    const j = qIdx + dir;
-    setBlocks(blocks.map((b, i) => {
+  function handleQuestionDragEnd(blockIdx: number, event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    setBlocks((prev) => prev.map((b, i) => {
       if (i !== blockIdx) return b;
-      if (j < 0 || j >= b.questions.length) return b;
-      const qs = [...b.questions];
-      [qs[qIdx], qs[j]] = [qs[j], qs[qIdx]];
-      return { ...b, questions: qs };
+      const oldIdx = b.questions.findIndex((q) => q.question_id === active.id);
+      const newIdx = b.questions.findIndex((q) => q.question_id === over.id);
+      if (oldIdx < 0 || newIdx < 0) return b;
+      return { ...b, questions: arrayMove(b.questions, oldIdx, newIdx) };
     }));
+  }
+
+  // ── Duplicate question ─────────────────────────────────────────────────────
+
+  async function duplicateQuestion(blockIdx: number, q: QuestionData) {
+    try {
+      const hasOptions = ["multiple_choice", "multiple_select", "true_false"].includes(q.type);
+      const isMedia = ["audio_prompt", "video_prompt"].includes(q.type);
+      const payload: any = {
+        type: q.type,
+        prompt_json: q.prompt_json,
+        points: q.points,
+        tags: q.tags,
+        explanation_json: q.explanation_json || undefined,
+      };
+      if (hasOptions) {
+        payload.options = Array.isArray(q.options_json)
+          ? q.options_json.map((o: any) => ({
+              id: o.id,
+              text: o.content_json?.content?.[0]?.content?.[0]?.text ?? "",
+            }))
+          : [];
+        payload.correct_answer = q.correct_answer || null;
+      }
+      if (q.type === "short_text") {
+        payload.correct_answer = q.correct_answer?.text ? { text: q.correct_answer.text } : null;
+      }
+      if (isMedia && !Array.isArray(q.options_json)) {
+        payload.media_ref = q.options_json;
+      }
+      const res = await api.post("/questions", payload);
+      const created: QuestionData = res.data;
+      setBlocks((prev) => prev.map((b, i) => {
+        if (i !== blockIdx) return b;
+        const srcIdx = b.questions.findIndex((bq) => bq.question_id === q.id);
+        const insertAt = srcIdx >= 0 ? srcIdx + 1 : b.questions.length;
+        const qs = [...b.questions];
+        qs.splice(insertAt, 0, { question_id: created.id, order: insertAt, data: created });
+        return { ...b, questions: qs };
+      }));
+    } catch {
+      // silent — user can retry
+    }
   }
 
   // ── Inline question form ───────────────────────────────────────────────────
@@ -286,12 +376,14 @@ export default function TestForm({ testId }: Props) {
     setQError("");
     setEditorKey((k) => k + 1);
     setQForm(emptyQForm(blockIdx));
+    setFormOpenCount((c) => c + 1);
   }
 
   function openEditQuestion(blockIdx: number, q: QuestionData) {
     setQError("");
     setEditorKey((k) => k + 1);
     setQForm(questionToForm(blockIdx, q));
+    setFormOpenCount((c) => c + 1);
   }
 
   function setQ(key: string, value: any) {
@@ -387,7 +479,6 @@ export default function TestForm({ testId }: Props) {
       const res = await api.post("/questions/bulk-import", json);
       const { created, question_ids } = res.data;
 
-      // Fetch the created questions to get their full data
       const newQuestions: QuestionData[] = await Promise.all(
         question_ids.map((id: string) => api.get(`/questions/${id}`).then((r) => r.data))
       );
@@ -445,7 +536,7 @@ export default function TestForm({ testId }: Props) {
   function set(key: string, value: any) { setSettings((s) => ({ ...s, [key]: value })); }
 
   const needsOptions = qForm ? ["multiple_choice", "multiple_select", "true_false"].includes(qForm.type) : false;
-  const isMedia = qForm ? ["audio_prompt", "video_prompt"].includes(qForm.type) : false;
+  const isMediaForm = qForm ? ["audio_prompt", "video_prompt"].includes(qForm.type) : false;
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
@@ -610,62 +701,248 @@ export default function TestForm({ testId }: Props) {
           </p>
         )}
 
-        {blocks.map((block, bi) => (
-          <div key={bi} className="card space-y-3">
-            <div className="flex items-center gap-2">
-              <input value={block.title}
-                onChange={(e) => setBlocks(blocks.map((b, i) => i === bi ? { ...b, title: e.target.value } : b))}
-                placeholder={`Block ${bi + 1} title (optional)`}
-                className="input flex-1" />
-              {blocks.length > 1 && (
-                <div className="flex items-center gap-1 shrink-0">
-                  <button onClick={() => moveBlock(bi, -1)} disabled={bi === 0}
-                    className="text-gray-400 hover:text-gray-600 disabled:opacity-20 text-sm px-1" title="Move block up">↑</button>
-                  <button onClick={() => moveBlock(bi, 1)} disabled={bi === blocks.length - 1}
-                    className="text-gray-400 hover:text-gray-600 disabled:opacity-20 text-sm px-1" title="Move block down">↓</button>
-                  <button onClick={() => removeBlock(bi)} className="text-xs text-red-400 hover:underline ml-1">Remove</button>
-                </div>
-              )}
+        {/* Blocks — sortable */}
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleBlockDragEnd}>
+          <SortableContext items={blocks.map((_, i) => `blk-${i}`)} strategy={verticalListSortingStrategy}>
+            <div className="space-y-4">
+              {blocks.map((block, bi) => {
+                const color = BLOCK_COLORS[bi % BLOCK_COLORS.length];
+                const qCount = block.questions.length;
+                return (
+                  <SortableItem key={`blk-${bi}`} id={`blk-${bi}`}>
+                    {(dragHandle) => (
+                      <div className="card space-y-3 border-l-4" style={{ borderLeftColor: color }}>
+
+                        {/* Block header */}
+                        <div className="flex items-center gap-2">
+                          <button
+                            {...dragHandle}
+                            className="cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500 text-lg leading-none px-0.5 shrink-0 select-none"
+                            title="Drag to reorder block"
+                          >
+                            ⠿
+                          </button>
+                          <input
+                            value={block.title}
+                            onChange={(e) => setBlocks(blocks.map((b, i) => i === bi ? { ...b, title: e.target.value } : b))}
+                            placeholder={`Block ${bi + 1} title (optional)`}
+                            className="input flex-1"
+                          />
+                          <span className="text-xs text-gray-400 shrink-0 whitespace-nowrap">
+                            {qCount} Q{qCount !== 1 ? "s" : ""}
+                          </span>
+                          {blocks.length > 1 && (
+                            <button onClick={() => removeBlock(bi)} className="text-xs text-red-400 hover:underline shrink-0">
+                              Remove
+                            </button>
+                          )}
+                        </div>
+
+                        {/* Block context */}
+                        <BlockContextEditor
+                          value={block.context_json}
+                          onChange={(json) => setBlocks(blocks.map((b, i) => i === bi ? { ...b, context_json: json } : b))}
+                          editorKey={bi}
+                          blockTitle={block.title}
+                        />
+
+                        {/* Questions — inner sortable */}
+                        {block.questions.length > 0 && (
+                          <DndContext
+                            sensors={sensors}
+                            collisionDetection={closestCenter}
+                            onDragEnd={(e) => handleQuestionDragEnd(bi, e)}
+                          >
+                            <SortableContext
+                              items={block.questions.map((q) => q.question_id)}
+                              strategy={verticalListSortingStrategy}
+                            >
+                              <ul className="space-y-1">
+                                {block.questions.map((bq) => {
+                                  const isEditing = qForm?.editingId === bq.question_id && qForm?.blockIdx === bi;
+                                  return (
+                                    <SortableItem key={bq.question_id} id={bq.question_id}>
+                                      {(qDragHandle) => (
+                                        <li className={`flex items-center gap-1 text-sm rounded px-2 py-1.5 group transition-colors ${
+                                          isEditing ? "bg-amber-50 ring-1 ring-amber-200" : "bg-gray-50 hover:bg-gray-100"
+                                        }`}>
+                                          <button
+                                            {...qDragHandle}
+                                            className="cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-400 px-0.5 shrink-0 select-none"
+                                            title="Drag to reorder"
+                                          >
+                                            ⠿
+                                          </button>
+                                          <button
+                                            onClick={() => openEditQuestion(bi, bq.data)}
+                                            className="flex-1 text-left truncate hover:text-amber-700"
+                                          >
+                                            <span className="text-xs text-amber-600 mr-2">{bq.data?.type}</span>
+                                            <span className="text-gray-700">
+                                              {bq.data ? tiptapToText(bq.data.prompt_json).slice(0, 80) || "(no prompt)" : bq.question_id}
+                                            </span>
+                                          </button>
+                                          <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button
+                                              onClick={() => duplicateQuestion(bi, bq.data)}
+                                              className="text-gray-400 hover:text-indigo-500 px-0.5 text-sm"
+                                              title="Duplicate question"
+                                            >
+                                              ⧉
+                                            </button>
+                                            <button
+                                              onClick={() => removeQuestionFromBlock(bi, bq.question_id)}
+                                              className="text-red-400 hover:text-red-600 px-0.5"
+                                              title="Remove question"
+                                            >
+                                              ✕
+                                            </button>
+                                          </div>
+                                        </li>
+                                      )}
+                                    </SortableItem>
+                                  );
+                                })}
+                              </ul>
+                            </SortableContext>
+                          </DndContext>
+                        )}
+
+                        {/* Inline question form OR "New question" button */}
+                        {qForm?.blockIdx === bi ? (
+                          <div ref={inlineFormRef} className="border-t border-gray-100 pt-4 space-y-4">
+                            {qError && <p className="text-sm text-red-600 bg-red-50 rounded px-3 py-2">{qError}</p>}
+                            <p className="text-sm font-semibold text-gray-700">
+                              {qForm.editingId ? "Edit question" : "New question"}
+                            </p>
+
+                            <div>
+                              <label className="label">Type</label>
+                              <select value={qForm.type} onChange={(e) => setQ("type", e.target.value)} className="input w-full">
+                                {QUESTION_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                              </select>
+                            </div>
+
+                            {qForm.type !== "divider" && (
+                              <div>
+                                <label className="label">Prompt</label>
+                                <RichTextEditor
+                                  key={editorKey}
+                                  value={qForm.prompt_json}
+                                  onChange={(json) => setQ("prompt_json", json)}
+                                  placeholder="Question prompt…"
+                                />
+                              </div>
+                            )}
+
+                            {qForm.type === "short_text" && (
+                              <div>
+                                <label className="label">Correct answer (exact match, case-insensitive)</label>
+                                <input
+                                  value={qForm.correct_answer}
+                                  onChange={(e) => setQ("correct_answer", e.target.value)}
+                                  className="input w-full"
+                                  placeholder='e.g. "necessary"'
+                                />
+                              </div>
+                            )}
+
+                            {isMediaForm && (
+                              <div>
+                                <label className="label">Media file</label>
+                                {qForm.media_file_id && (
+                                  <p className="text-xs text-green-600 mb-1">✓ File uploaded ({qForm.media_mime_type})</p>
+                                )}
+                                <input type="file" accept={qForm.type === "audio_prompt" ? "audio/*" : "video/*"}
+                                  className="text-sm"
+                                  onChange={async (e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                      try { await handleMediaUpload(file); }
+                                      catch { setQError("Media upload failed"); }
+                                    }
+                                  }} />
+                              </div>
+                            )}
+
+                            {needsOptions && (
+                              <div>
+                                <label className="label">Options</label>
+                                {qForm.options.map((opt, i) => (
+                                  <div key={i} className="flex gap-2 mb-1">
+                                    <input value={opt.id}
+                                      onChange={(e) => {
+                                        const opts = [...qForm.options]; opts[i] = { ...opts[i], id: e.target.value };
+                                        setQ("options", opts);
+                                      }}
+                                      className="input w-16" placeholder="id" />
+                                    <input value={opt.text}
+                                      onChange={(e) => {
+                                        const opts = [...qForm.options]; opts[i] = { ...opts[i], text: e.target.value };
+                                        setQ("options", opts);
+                                      }}
+                                      className="input flex-1" placeholder="Option text" />
+                                    <button onClick={() => removeOption(i)} className="text-red-400 text-xs px-1">✕</button>
+                                  </div>
+                                ))}
+                                <button onClick={addOption} className="text-xs text-amber-600 hover:underline mt-1">+ Add option</button>
+                              </div>
+                            )}
+
+                            {needsOptions && (
+                              <div>
+                                <label className="label">Correct answer (option id)</label>
+                                <input value={qForm.correct_answer}
+                                  onChange={(e) => setQ("correct_answer", e.target.value)}
+                                  className="input w-full"
+                                  placeholder='e.g. "a" or ["a","b"] for multiple_select' />
+                              </div>
+                            )}
+
+                            <div className="flex gap-3">
+                              <div className="flex-1">
+                                <label className="label">Points</label>
+                                <input type="number" min={1} value={qForm.points}
+                                  onChange={(e) => setQ("points", parseInt(e.target.value) || 1)}
+                                  className="input w-full" />
+                              </div>
+                              <div className="flex-1">
+                                <label className="label">Tags (comma separated)</label>
+                                <input value={qForm.tags} onChange={(e) => setQ("tags", e.target.value)}
+                                  className="input w-full" placeholder="grammar, reading" />
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="label">Explanation (shown in practice mode)</label>
+                              <RichTextEditor
+                                key={editorKey + 1000}
+                                value={qForm.explanation_json}
+                                onChange={(json) => setQ("explanation_json", json)}
+                                placeholder="Explanation for correct answer…"
+                              />
+                            </div>
+
+                            <div className="flex justify-end gap-2 pt-1">
+                              <button onClick={() => setQForm(null)} className="btn-ghost text-sm">Cancel</button>
+                              <button onClick={handleSaveQuestion} disabled={qSaving} className="btn-primary text-sm disabled:opacity-50">
+                                {qSaving ? "Saving…" : "Save question"}
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <button onClick={() => openNewQuestion(bi)} className="text-sm text-amber-600 hover:underline">
+                            + New question
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </SortableItem>
+                );
+              })}
             </div>
-
-            {/* Block context editor */}
-            <BlockContextEditor
-              value={block.context_json}
-              onChange={(json) => setBlocks(blocks.map((b, i) => i === bi ? { ...b, context_json: json } : b))}
-              editorKey={bi}
-              blockTitle={block.title}
-            />
-
-            {block.questions.length > 0 && (
-              <ul className="space-y-1">
-                {block.questions.map((bq, qi) => (
-                  <li key={bq.question_id} className="flex items-center gap-1 text-sm bg-gray-50 rounded px-3 py-1.5 group">
-                    <button
-                      onClick={() => openEditQuestion(bi, bq.data)}
-                      className="flex-1 text-left truncate hover:text-amber-700"
-                    >
-                      <span className="text-xs text-amber-600 mr-2">{bq.data?.type}</span>
-                      <span className="text-gray-700">{bq.data ? tiptapToText(bq.data.prompt_json).slice(0, 80) || "(no prompt)" : bq.question_id}</span>
-                    </button>
-                    <div className="flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100">
-                      <button onClick={() => moveQuestion(bi, qi, -1)} disabled={qi === 0}
-                        className="text-gray-400 hover:text-gray-600 disabled:opacity-20 px-0.5" title="Move up">↑</button>
-                      <button onClick={() => moveQuestion(bi, qi, 1)} disabled={qi === block.questions.length - 1}
-                        className="text-gray-400 hover:text-gray-600 disabled:opacity-20 px-0.5" title="Move down">↓</button>
-                      <button onClick={() => removeQuestionFromBlock(bi, bq.question_id)}
-                        className="text-red-400 ml-1 px-0.5">✕</button>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            <button onClick={() => openNewQuestion(bi)}
-              className="text-sm text-amber-600 hover:underline">
-              + New question
-            </button>
-          </div>
-        ))}
+          </SortableContext>
+        </DndContext>
 
         <button onClick={addBlock} className="text-sm text-amber-600 hover:underline">+ Add block</button>
       </div>
@@ -676,130 +953,6 @@ export default function TestForm({ testId }: Props) {
           {saving ? "Saving…" : "Save Test"}
         </button>
       </div>
-
-      {/* Inline question form modal */}
-      {qForm && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 space-y-4 max-h-[90vh] overflow-y-auto">
-            <h2 className="text-lg font-bold">{qForm.editingId ? "Edit Question" : "New Question"}</h2>
-            {qError && <p className="text-sm text-red-600 bg-red-50 rounded px-3 py-2">{qError}</p>}
-
-            <div>
-              <label className="label">Type</label>
-              <select value={qForm.type} onChange={(e) => setQ("type", e.target.value)} className="input w-full">
-                {QUESTION_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-              </select>
-            </div>
-
-            {qForm.type !== "divider" && (
-              <div>
-                <label className="label">Prompt</label>
-                <RichTextEditor
-                  key={editorKey}
-                  value={qForm.prompt_json}
-                  onChange={(json) => setQ("prompt_json", json)}
-                  placeholder="Question prompt…"
-                />
-              </div>
-            )}
-
-            {qForm.type === "short_text" && (
-              <div>
-                <label className="label">Correct answer (exact match, case-insensitive)</label>
-                <input
-                  value={qForm.correct_answer}
-                  onChange={(e) => setQ("correct_answer", e.target.value)}
-                  className="input w-full"
-                  placeholder='e.g. "necessary" for a spelling question'
-                />
-              </div>
-            )}
-
-            {isMedia && (
-              <div>
-                <label className="label">Media file</label>
-                {qForm.media_file_id && (
-                  <p className="text-xs text-green-600 mb-1">✓ File uploaded ({qForm.media_mime_type})</p>
-                )}
-                <input type="file" accept={qForm.type === "audio_prompt" ? "audio/*" : "video/*"}
-                  className="text-sm"
-                  onChange={async (e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      try { await handleMediaUpload(file); }
-                      catch { setQError("Media upload failed"); }
-                    }
-                  }} />
-              </div>
-            )}
-
-            {needsOptions && (
-              <div>
-                <label className="label">Options</label>
-                {qForm.options.map((opt, i) => (
-                  <div key={i} className="flex gap-2 mb-1">
-                    <input value={opt.id}
-                      onChange={(e) => {
-                        const opts = [...qForm.options]; opts[i] = { ...opts[i], id: e.target.value };
-                        setQ("options", opts);
-                      }}
-                      className="input w-16" placeholder="id" />
-                    <input value={opt.text}
-                      onChange={(e) => {
-                        const opts = [...qForm.options]; opts[i] = { ...opts[i], text: e.target.value };
-                        setQ("options", opts);
-                      }}
-                      className="input flex-1" placeholder="Option text" />
-                    <button onClick={() => removeOption(i)} className="text-red-400 text-xs px-1">✕</button>
-                  </div>
-                ))}
-                <button onClick={addOption} className="text-xs text-amber-600 hover:underline mt-1">+ Add option</button>
-              </div>
-            )}
-
-            {needsOptions && (
-              <div>
-                <label className="label">Correct answer (option id)</label>
-                <input value={qForm.correct_answer}
-                  onChange={(e) => setQ("correct_answer", e.target.value)}
-                  className="input w-full"
-                  placeholder='e.g. "a" or ["a","b"] for multiple_select' />
-              </div>
-            )}
-
-            <div className="flex gap-3">
-              <div className="flex-1">
-                <label className="label">Points</label>
-                <input type="number" min={1} value={qForm.points}
-                  onChange={(e) => setQ("points", parseInt(e.target.value) || 1)}
-                  className="input w-full" />
-              </div>
-              <div className="flex-1">
-                <label className="label">Tags (comma separated)</label>
-                <input value={qForm.tags} onChange={(e) => setQ("tags", e.target.value)}
-                  className="input w-full" placeholder="grammar, reading" />
-              </div>
-            </div>
-
-            <div>
-              <label className="label">Explanation (shown in practice mode)</label>
-              <RichTextEditor
-                key={editorKey + 1000}
-                value={qForm.explanation_json}
-                onChange={(json) => setQ("explanation_json", json)}
-                placeholder="Explanation for correct answer…"
-              />
-            </div>
-
-            <div className="flex justify-end gap-3 pt-2">
-              <button onClick={() => setQForm(null)} className="btn-ghost">Cancel</button>
-              <button onClick={handleSaveQuestion} disabled={qSaving} className="btn-primary disabled:opacity-50">
-                {qSaving ? "Saving…" : "Save question"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
