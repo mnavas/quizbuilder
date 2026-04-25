@@ -1,3 +1,5 @@
+name: quizbuilder
+
 services:
   db:
     image: postgres:15-alpine
@@ -73,4 +75,8 @@ networks:
 
 volumes:
   postgres-data:
+    external: true
+    name: quizbuilder_postgres-data
   media-data:
+    external: true
+    name: quizbuilder_media-data
