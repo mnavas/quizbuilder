@@ -15,6 +15,10 @@ from pathlib import Path
 
 # ── Colors ────────────────────────────────────────────────────────────────────
 
+def _cmd():
+    """Returns the right command prefix for the current platform."""
+    return "quizbuilder" if platform.system() == "Windows" else "./quizbuilder"
+
 def _supports_color():
     if platform.system() == "Windows":
         try:
@@ -89,7 +93,7 @@ def ensure_docker():
                 if user:
                     run(f"sudo usermod -aG docker {user}", check=False)
                 ok("Docker installed.")
-                print("  " + dim("You may need to log out and back in, then run: quizbuilder install"))
+                print("  " + dim(f"You may need to log out and back in, then run: {_cmd()} install"))
                 sys.exit(0)
         else:
             print(f"  Download Docker Desktop: {cyan('https://www.docker.com/products/docker-desktop/')}")
@@ -176,8 +180,8 @@ def cmd_install():
     env_file = HERE / ".env"
     if env_file.exists():
         ok("QuizBuilder is already installed.")
-        print("  Run " + bold("quizbuilder start") + "   to start the server.")
-        print("  Run " + bold("quizbuilder status") + "  to check if it's running.")
+        print("  Run " + bold(f"{_cmd()} start") + "   to start the server.")
+        print("  Run " + bold(f"{_cmd()} status") + "  to check if it's running.")
         return
 
     step(1, "Checking Docker…")
@@ -304,7 +308,8 @@ def cmd_help():
 {bold('QuizBuilder')} — self-hosted quiz platform
 
 {bold('USAGE')}
-  quizbuilder <command>
+  ./quizbuilder <command>        (Mac / Linux)
+  quizbuilder <command>          (Windows)
 
 {bold('COMMANDS')}
   {green('install')}    First-time setup: checks Docker, sets passwords, starts the server
@@ -323,7 +328,7 @@ def cmd_help():
 def _check_installed():
     if not (HERE / ".env").exists():
         err("QuizBuilder is not set up yet.")
-        print("  Run " + bold("quizbuilder install") + " first.")
+        print("  Run " + bold(f"{_cmd()} install") + " first.")
         sys.exit(1)
 
 def _print_urls():
@@ -354,7 +359,7 @@ def main():
     cmd = sys.argv[1].lower()
     if cmd not in COMMANDS:
         err(f"Unknown command: {cmd}")
-        print("  Run " + bold("quizbuilder help") + " for available commands.")
+        print("  Run " + bold(f"{_cmd()} help") + " for available commands.")
         sys.exit(1)
     COMMANDS[cmd]()
 
