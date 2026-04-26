@@ -1,0 +1,11 @@
+#!/bin/sh
+# QuizBuilder CLI launcher (Mac / Linux)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+if command -v python3 >/dev/null 2>&1; then
+  exec python3 "$SCRIPT_DIR/quizbuilder.py" "$@"
+elif command -v python >/dev/null 2>&1; then
+  exec python "$SCRIPT_DIR/quizbuilder.py" "$@"
+else
+  echo "Python 3 is required to run QuizBuilder. Install it from https://www.python.org/"
+  exit 1
+fi
