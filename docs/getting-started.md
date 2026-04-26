@@ -2,19 +2,31 @@
 
 ## Prerequisites
 
-- Docker and Docker Compose
+- **Docker Desktop** — [docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop/)
+- **Python 3** — [python.org/downloads](https://www.python.org/downloads/)
 - Git
+
+On Linux all three can be installed in one step:
+```bash
+curl -fsSL https://get.docker.com | sh && sudo apt install python3 git
+```
 
 ---
 
 ## Quick Start
 
 ```bash
-git clone <your-repo-url> quizbuilder
+git clone https://github.com/mnavas/quizbuilder.git
 cd quizbuilder
-cp .env.example .env   # edit before running
-docker compose up -d
+
+# Mac / Linux
+./quizbuilder install
+
+# Windows
+quizbuilder install
 ```
+
+The installer sets up passwords, generates a secret key, and starts the server automatically.
 
 The web UI is available at `http://localhost:3000`.
 The API is available at `http://localhost:8000/api/v1`.

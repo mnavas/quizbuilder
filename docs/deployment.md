@@ -132,11 +132,20 @@ docker compose exec api alembic revision --autogenerate -m "description"
 ## Updating
 
 ```bash
+# Mac / Linux
+./quizbuilder update
+
+# Windows
+quizbuilder update
+```
+
+This pulls the latest code and rebuilds the containers. The API will run any new migrations on restart.
+
+For production environments that need fine-grained control:
+```bash
 git pull
 docker compose up -d --build
 ```
-
-The API will run new migrations on restart.
 
 ---
 
