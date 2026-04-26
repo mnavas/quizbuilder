@@ -2,7 +2,7 @@
 
 Self-hosted online assessment platform. Run your own quiz and test server — spelling bees, multiple-choice exams, reading comprehension, and more. Built with Docker, works offline on a local network.
 
-**[Installation guide →](pages/install.html)** · [Examples](pages/examples.html) · [GitHub](https://github.com/mnavas/quizbuilder)
+**[Installation guide →](https://mnavas.github.io/quizbuilder-page/pages/install.html)** · [Examples](https://mnavas.github.io/quizbuilder-page/pages/examples.html) · [Website](https://mnavas.github.io/quizbuilder-page)
 
 ---
 

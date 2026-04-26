@@ -114,12 +114,12 @@ export default function SettingsPage() {
           <h2 className="text-sm font-semibold text-gray-800 mb-1">About</h2>
           <p className="text-xs text-gray-500 mb-1">QuizBuilder — self-hosted quiz platform.</p>
           <a
-            href="https://mnavas.github.io/quizbuilder"
+            href="https://mnavas.github.io/quizbuilder-page"
             target="_blank"
             rel="noopener noreferrer"
             className="text-xs text-amber-600 hover:underline"
           >
-            mnavas.github.io/quizbuilder →
+            mnavas.github.io/quizbuilder-page →
           </a>
         </div>
 
