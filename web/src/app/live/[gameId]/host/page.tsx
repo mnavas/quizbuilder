@@ -3,8 +3,35 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
+import QRCode from "qrcode";
 import { api } from "@/lib/api";
 import RichTextViewer from "@/components/RichTextViewer";
+
+function QrModal({ url, onClose }: { url: string; onClose: () => void }) {
+  const [dataUrl, setDataUrl] = useState("");
+  const [copied, setCopied] = useState(false);
+  useEffect(() => {
+    QRCode.toDataURL(url, { width: 280, margin: 2, color: { dark: "#111827", light: "#ffffff" } }).then(setDataUrl);
+  }, [url]);
+  function copy() { navigator.clipboard.writeText(url); setCopied(true); setTimeout(() => setCopied(false), 2000); }
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" onClick={onClose}>
+      <div className="bg-white rounded-2xl p-6 shadow-xl max-w-xs w-full text-center" onClick={(e) => e.stopPropagation()}>
+        <p className="text-sm font-semibold text-gray-700 mb-1">Scan to join</p>
+        <p className="text-xs text-gray-400 mb-3">Opens the join page on players&apos; phones</p>
+        {dataUrl
+          // eslint-disable-next-line @next/next/no-img-element
+          ? <img src={dataUrl} alt="QR code" className="mx-auto rounded-lg" />
+          : <div className="w-[280px] h-[280px] mx-auto bg-gray-100 rounded-lg animate-pulse" />}
+        <button onClick={copy}
+          className={`mt-3 w-full text-xs py-2 rounded-lg font-medium transition ${copied ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
+          {copied ? "✓ Copied!" : "Copy link"}
+        </button>
+        <p className="text-xs text-gray-300 mt-2 break-all font-mono leading-relaxed">{url}</p>
+      </div>
+    </div>
+  );
+}
 
 type PlayerInLobby = { nickname: string; avatar_color: string };
 type LiveQuestion = { id: string; type: string; prompt_json: any; options_json: any[] | null };
@@ -66,6 +93,8 @@ export default function HostPage() {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [advancing, setAdvancing] = useState(false);
   const [error, setError] = useState("");
+  const [baseUrl, setBaseUrl] = useState("");
+  const [showQr, setShowQr] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   async function poll() {
@@ -78,6 +107,7 @@ export default function HostPage() {
   }
 
   useEffect(() => {
+    setBaseUrl(localStorage.getItem("qb_base_url") || window.location.origin);
     poll();
     pollRef.current = setInterval(poll, 1000);
     return () => { if (pollRef.current) clearInterval(pollRef.current); };
@@ -117,10 +147,24 @@ export default function HostPage() {
       <div className="flex-1 flex flex-col items-center justify-center gap-8 p-8">
         <div className="text-center">
           <p className="text-gray-400 text-sm mb-2">Players join at</p>
-          <p className="text-xl font-mono font-semibold text-white">
-            {typeof window !== "undefined" ? `${window.location.origin}/live-join` : "/live-join"}
-          </p>
+          <div className="flex items-center justify-center gap-3">
+            <p className="text-xl font-mono font-semibold text-white">{baseUrl}/live-join</p>
+            <button
+              onClick={() => setShowQr(true)}
+              className="p-2 rounded-xl bg-white/10 hover:bg-white/20 transition text-white"
+              title="Show QR code"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round"
+                  d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z" />
+                <path strokeLinecap="round" strokeLinejoin="round"
+                  d="M6.75 6.75h.75v.75h-.75v-.75zM6.75 16.5h.75v.75h-.75V16.5zM16.5 6.75h.75v.75h-.75v-.75zM13.5 13.5h.75v.75h-.75v-.75zM13.5 19.5h.75v.75h-.75v-.75zM19.5 13.5h.75v.75h-.75v-.75zM19.5 19.5h.75v.75h-.75v-.75zM16.5 16.5h.75v.75h-.75v-.75z" />
+              </svg>
+            </button>
+          </div>
         </div>
+
+        {showQr && <QrModal url={`${baseUrl}/live-join`} onClose={() => setShowQr(false)} />}
 
         <div className="bg-white/10 rounded-3xl px-16 py-10 text-center">
           <p className="text-gray-400 text-sm mb-2 tracking-widest uppercase">Game PIN</p>
