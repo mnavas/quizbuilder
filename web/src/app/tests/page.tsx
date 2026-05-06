@@ -295,6 +295,7 @@ export default function TestsPage() {
   const [practiceQrId, setPracticeQrId] = useState<string | null>(null);
   const [cloningId, setCloningId] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<Test | null>(null);
+  const [launchingLive, setLaunchingLive] = useState<string | null>(null);
   const [baseUrl, setBaseUrl] = useState("");
   useEffect(() => { setBaseUrl(localStorage.getItem("qb_base_url") || window.location.origin); }, []);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -342,6 +343,19 @@ export default function TestsPage() {
       triggerDownload(res.data, `quizbuilder_${slug}.${isZip ? "zip" : "json"}`);
       toast("Bundle downloaded");
     } catch { toast("Download failed", "error"); }
+  }
+
+  async function handleLaunchLive(id: string) {
+    setLaunchingLive(id);
+    try {
+      const res = await api.post("/live/games", { test_id: id, time_limit_seconds: 20 });
+      window.open(`/live/${res.data.game_id}/host`, "_blank");
+      toast(`Live game created — PIN: ${res.data.pin}`);
+    } catch (e: any) {
+      toast(e?.response?.data?.detail ?? "Could not create live game", "error");
+    } finally {
+      setLaunchingLive(null);
+    }
   }
 
   async function handleClone(id: string) {
@@ -490,6 +504,11 @@ export default function TestsPage() {
                       <MenuItem onClick={() => setPreviewId(t.id)} label="Preview" />
                       {t.link_token && <MenuItem href={`/take/${t.link_token}`} target="_blank" label="Take test" />}
                       {!t.published_at && <MenuItem onClick={() => handlePublish(t.id)} label="Publish" />}
+                      <MenuItem
+                        onClick={() => handleLaunchLive(t.id)}
+                        label={launchingLive === t.id ? "Launching…" : "🎮 Launch Live Game"}
+                        disabled={launchingLive === t.id}
+                      />
                       <MenuItem href={`/results?test_id=${t.id}`} label="Results" />
                       <MenuItem onClick={() => handleClone(t.id)} label={cloningId === t.id ? "Cloning…" : "Clone"} disabled={cloningId === t.id} />
                       {t.practice_enabled && (

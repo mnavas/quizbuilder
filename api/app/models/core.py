@@ -358,6 +358,69 @@ class Answer(Base):
     session: Mapped["Session"] = relationship("Session", back_populates="answers")
 
 
+class LiveGame(Base):
+    """
+    A Kahoot-style live game session driven by a manager.
+
+    The manager creates a LiveGame from a test, gets a numeric PIN, and players
+    join using that PIN. The manager advances the game state question by question.
+
+    States: waiting → question_active → question_closed → (repeat) → finished
+
+    question_ids_json: ordered list of question UUIDs (only multiple_choice /
+    true_false questions are included; resolved at creation time).
+    current_question_index: -1 while in waiting state; 0-based once started.
+    current_question_started_at: server timestamp when the current question
+    was opened — used to compute time_remaining_ms and speed-score answers.
+    """
+    __tablename__ = "live_games"
+
+    id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True, default=_uuid)
+    test_id: Mapped[str] = mapped_column(UUID(as_uuid=False), ForeignKey("tests.id"), nullable=False)
+    tenant_id: Mapped[str] = mapped_column(UUID(as_uuid=False), ForeignKey("tenants.id"), nullable=False)
+    created_by: Mapped[str] = mapped_column(UUID(as_uuid=False), ForeignKey("users.id"), nullable=False)
+    pin: Mapped[str] = mapped_column(String(6), nullable=False, index=True)
+    # state: waiting | question_active | question_closed | finished
+    state: Mapped[str] = mapped_column(String(20), nullable=False, default="waiting")
+    current_question_index: Mapped[int] = mapped_column(Integer, nullable=False, default=-1)
+    current_question_started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    time_limit_seconds: Mapped[int] = mapped_column(Integer, nullable=False, default=20)
+    question_ids_json: Mapped[list] = mapped_column(JSONB, nullable=False, default=list)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    players: Mapped[list["LivePlayer"]] = relationship("LivePlayer", back_populates="game")
+
+
+class LivePlayer(Base):
+    """A player who has joined a LiveGame via PIN + nickname."""
+    __tablename__ = "live_players"
+
+    id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True, default=_uuid)
+    game_id: Mapped[str] = mapped_column(UUID(as_uuid=False), ForeignKey("live_games.id"), nullable=False)
+    nickname: Mapped[str] = mapped_column(String(100), nullable=False)
+    avatar_color: Mapped[str] = mapped_column(String(7), nullable=False, default="#f59e0b")
+    total_score: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    joined_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    game: Mapped["LiveGame"] = relationship("LiveGame", back_populates="players")
+
+
+class LiveAnswer(Base):
+    """One player's answer to one question in a LiveGame."""
+    __tablename__ = "live_answers"
+    __table_args__ = (UniqueConstraint("game_id", "player_id", "question_id"),)
+
+    id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True, default=_uuid)
+    game_id: Mapped[str] = mapped_column(UUID(as_uuid=False), ForeignKey("live_games.id"), nullable=False)
+    player_id: Mapped[str] = mapped_column(UUID(as_uuid=False), ForeignKey("live_players.id"), nullable=False)
+    question_id: Mapped[str] = mapped_column(UUID(as_uuid=False), ForeignKey("questions.id"), nullable=False)
+    value_json: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    answered_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    time_ms: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    points_earned: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    is_correct: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+
+
 class MediaFile(Base):
     """
     Uploaded binary asset (image, audio, video) stored on the local filesystem.

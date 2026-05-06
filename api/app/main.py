@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.db import AsyncSessionLocal
-from app.routers import auth, health, media, questions, results, sessions, tests, users
+from app.routers import auth, health, live, media, questions, results, sessions, tests, users
 
 logging.basicConfig(
     level=logging.INFO,
@@ -67,6 +67,7 @@ api_v1.include_router(tests.router, prefix="/tests", tags=["tests"])
 api_v1.include_router(sessions.router, prefix="/sessions", tags=["sessions"])
 api_v1.include_router(results.router, prefix="/results", tags=["results"])
 api_v1.include_router(media.router, prefix="/media", tags=["media"])
+api_v1.include_router(live.router, prefix="/live", tags=["live"])
 
 app.mount("/api/v1", api_v1)
 
