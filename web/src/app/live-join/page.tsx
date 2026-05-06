@@ -1,17 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/lib/api";
 
-export default function LiveJoinPage() {
+function LiveJoinInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [pin, setPin] = useState("");
   const [nickname, setNickname] = useState("");
   const [step, setStep] = useState<"pin" | "nickname">("pin");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // If a PIN is pre-filled via URL (e.g. from a QR code), skip straight to nickname
+  useEffect(() => {
+    const prePin = searchParams.get("pin")?.replace(/\D/g, "").slice(0, 6) ?? "";
+    if (prePin.length === 6) {
+      setPin(prePin);
+      setStep("nickname");
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   function handlePinSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -120,5 +130,13 @@ export default function LiveJoinPage() {
         <p className="text-gray-600 text-xs text-center">Have a regular test code? <a href="/join" className="text-amber-400 hover:underline">Go to /join</a></p>
       </div>
     </div>
+  );
+}
+
+export default function LiveJoinPage() {
+  return (
+    <Suspense>
+      <LiveJoinInner />
+    </Suspense>
   );
 }

@@ -164,7 +164,7 @@ export default function HostPage() {
           </div>
         </div>
 
-        {showQr && <QrModal url={`${baseUrl}/live-join`} onClose={() => setShowQr(false)} />}
+        {showQr && <QrModal url={`${baseUrl}/live-join?pin=${pin}`} onClose={() => setShowQr(false)} />}
 
         <div className="bg-white/10 rounded-3xl px-16 py-10 text-center">
           <p className="text-gray-400 text-sm mb-2 tracking-widest uppercase">Game PIN</p>
