@@ -155,14 +155,12 @@ class GameStateOut(BaseModel):
 # ── State builder ─────────────────────────────────────────────────────────────
 
 async def _build_state(game: LiveGame, db: AsyncSession) -> GameStateOut:
-    base = dict(
-        state=game.state,
-        game_id=game.id,
-        pin=game.pin,
-        question_index=game.current_question_index,
-        question_count=len(game.question_ids_json),
-        time_limit_seconds=game.time_limit_seconds,
-    )
+    g_state = game.state
+    g_game_id = game.id
+    g_pin = game.pin
+    g_question_index = game.current_question_index
+    g_question_count = len(game.question_ids_json)
+    g_time_limit_seconds = game.time_limit_seconds
 
     if game.state == "waiting":
         players_result = await db.execute(
@@ -172,7 +170,9 @@ async def _build_state(game: LiveGame, db: AsyncSession) -> GameStateOut:
         )
         players = players_result.scalars().all()
         return GameStateOut(
-            **base,
+            state=g_state, game_id=g_game_id, pin=g_pin,
+            question_index=g_question_index, question_count=g_question_count,
+            time_limit_seconds=g_time_limit_seconds,
             players=[PlayerInLobby(nickname=p.nickname, avatar_color=p.avatar_color) for p in players],
         )
 
@@ -181,6 +181,7 @@ async def _build_state(game: LiveGame, db: AsyncSession) -> GameStateOut:
         q_result = await db.execute(select(Question).where(Question.id == q_id))
         q = q_result.scalar_one_or_none()
 
+        assert game.current_question_started_at is not None
         started_ms = int(game.current_question_started_at.timestamp() * 1000)
         time_remaining_ms = max(0, game.time_limit_seconds * 1000 - (_now_ms() - started_ms))
 
@@ -201,7 +202,9 @@ async def _build_state(game: LiveGame, db: AsyncSession) -> GameStateOut:
             question_out = LiveQuestionOut(id=q.id, type=q.type, prompt_json=q.prompt_json, options_json=opts)
 
         return GameStateOut(
-            **base,
+            state=g_state, game_id=g_game_id, pin=g_pin,
+            question_index=g_question_index, question_count=g_question_count,
+            time_limit_seconds=g_time_limit_seconds,
             question=question_out,
             time_remaining_ms=time_remaining_ms,
             answered_count=answered_count,
@@ -236,7 +239,9 @@ async def _build_state(game: LiveGame, db: AsyncSession) -> GameStateOut:
         opts = (q.options_json if isinstance(q.options_json, list) else None) if q else None
 
         return GameStateOut(
-            **base,
+            state=g_state, game_id=g_game_id, pin=g_pin,
+            question_index=g_question_index, question_count=g_question_count,
+            time_limit_seconds=g_time_limit_seconds,
             correct_answer=correct_answer,
             options_json=opts,
             top_question=top_question,
@@ -260,9 +265,18 @@ async def _build_state(game: LiveGame, db: AsyncSession) -> GameStateOut:
             )
             for i, p in enumerate(players[:20])
         ]
-        return GameStateOut(**base, top_cumulative=top_cumulative)
+        return GameStateOut(
+            state=g_state, game_id=g_game_id, pin=g_pin,
+            question_index=g_question_index, question_count=g_question_count,
+            time_limit_seconds=g_time_limit_seconds,
+            top_cumulative=top_cumulative,
+        )
 
-    return GameStateOut(**base)
+    return GameStateOut(
+        state=g_state, game_id=g_game_id, pin=g_pin,
+        question_index=g_question_index, question_count=g_question_count,
+        time_limit_seconds=g_time_limit_seconds,
+    )
 
 
 # ── Endpoints ─────────────────────────────────────────────────────────────────
@@ -456,6 +470,7 @@ async def submit_answer(
         return {"received": True, "already_answered": True}
 
     now = datetime.now(timezone.utc)
+    assert game.current_question_started_at is not None
     time_ms = int((now - game.current_question_started_at).total_seconds() * 1000)
     time_ms = min(time_ms, game.time_limit_seconds * 1000)
 
