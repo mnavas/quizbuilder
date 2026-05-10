@@ -185,13 +185,17 @@ def _normalize_options_and_correct(
             correct_answer = [id_map.get(a, a) for a in correct_answer]
         return normed, correct_answer
 
-    # Case 2: list of {id, content_json} dicts — fix missing paragraph wrapper
+    # Case 2: list of {id, ...} dicts — normalize to {id, content_json}
     if isinstance(options_json[0], dict):
         for opt in options_json:
             cj = opt.get("content_json")
-            if isinstance(cj, dict) and cj.get("type") == "doc":
+            if cj is None and "text" in opt:
+                # {id, text} format — convert to {id, content_json}
+                opt["content_json"] = _wrap_text(opt["text"])
+            elif isinstance(cj, dict) and cj.get("type") == "doc":
                 children = cj.get("content") or []
                 if children and isinstance(children[0], dict) and children[0].get("type") == "text":
+                    # Missing paragraph wrapper — fix it
                     opt["content_json"] = _wrap_text(children[0].get("text", ""))
 
     return options_json, correct_answer
