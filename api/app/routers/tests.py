@@ -150,6 +150,53 @@ def _wrap_text(text: str) -> dict:
     return {"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": text}]}]}
 
 
+_OPTION_IDS = "ABCDEFGHIJKLMNOP"
+
+
+def _normalize_options_and_correct(
+    q_type: str,
+    options_json: Any,
+    correct_answer: Any,
+) -> tuple[Any, Any]:
+    """Normalize options_json and correct_answer to the canonical {id, content_json} format.
+
+    Handles AI-generated JSONs that may use:
+    - Flat string arrays: ["Paris", "London"] → [{id: "A", content_json: ...}, ...]
+    - Tiptap nodes missing the paragraph wrapper (text directly under doc)
+    - Plain string correct_answer for choice types → {"value": "A"}
+    """
+    if not isinstance(options_json, list) or not options_json:
+        return options_json, correct_answer
+
+    # Case 1: flat string array (simplified import format)
+    if isinstance(options_json[0], str):
+        normed = [
+            {"id": _OPTION_IDS[i] if i < len(_OPTION_IDS) else str(i + 1),
+             "content_json": _wrap_text(opt)}
+            for i, opt in enumerate(options_json)
+        ]
+        if isinstance(correct_answer, str) and q_type in ("multiple_choice", "true_false"):
+            for i, opt_text in enumerate(options_json):
+                if opt_text == correct_answer:
+                    correct_answer = {"value": normed[i]["id"]}
+                    break
+        elif isinstance(correct_answer, list) and q_type == "multiple_select":
+            id_map = {opt_text: normed[i]["id"] for i, opt_text in enumerate(options_json)}
+            correct_answer = [id_map.get(a, a) for a in correct_answer]
+        return normed, correct_answer
+
+    # Case 2: list of {id, content_json} dicts — fix missing paragraph wrapper
+    if isinstance(options_json[0], dict):
+        for opt in options_json:
+            cj = opt.get("content_json")
+            if isinstance(cj, dict) and cj.get("type") == "doc":
+                children = cj.get("content") or []
+                if children and isinstance(children[0], dict) and children[0].get("type") == "text":
+                    opt["content_json"] = _wrap_text(children[0].get("text", ""))
+
+    return options_json, correct_answer
+
+
 def _block_out(block: TestBlock) -> BlockOut:
     return BlockOut(
         id=block.id,
@@ -888,8 +935,11 @@ async def import_test(
     # Support both {quizbuilder_version, test: {...}} envelope and bare test dict
     test_data: dict = body.get("test", body)
 
-    # Create questions block by block, preserving order
-    blocks_raw = test_data.get("blocks", [])
+    # Support flat question list without blocks (AI-generated JSONs often omit blocks)
+    blocks_raw = test_data.get("blocks") or []
+    if not blocks_raw and test_data.get("questions"):
+        blocks_raw = [{"title": "", "context_json": None, "questions": test_data["questions"]}]
+
     created_blocks: list[tuple[dict, list[str]]] = []
 
     for block_data in blocks_raw:
@@ -897,17 +947,22 @@ async def import_test(
         for q_data in block_data.get("questions", []):
             prompt_json = q_data.get("prompt_json") or _wrap_text(q_data.get("prompt") or "")
 
-            options_json = q_data.get("options_json")
+            # Accept both "options_json" and "options" (AI sometimes uses wrong key)
+            options_json = q_data.get("options_json") or q_data.get("options")
             # Restore media_ref into options_json for audio/video types
             if not options_json and q_data.get("media_ref"):
                 options_json = q_data["media_ref"]
 
+            q_type = q_data.get("type", "short_text")
+            correct_answer = q_data.get("correct_answer")
+            options_json, correct_answer = _normalize_options_and_correct(q_type, options_json, correct_answer)
+
             q = Question(
                 tenant_id=user.tenant_id,
-                type=q_data.get("type", "short_text"),
+                type=q_type,
                 prompt_json=prompt_json,
                 options_json=options_json,
-                correct_answer=q_data.get("correct_answer"),
+                correct_answer=correct_answer,
                 explanation_json=q_data.get("explanation_json"),
                 points=int(q_data.get("points", 1)),
                 tags=q_data.get("tags", []),
@@ -1022,22 +1077,27 @@ async def import_test_bundle(
                 _rewrite_media_ids(q_data.get("options_json"), id_map)
 
     # Create questions and test (same logic as import_test)
-    blocks_raw = test_data.get("blocks", [])
+    blocks_raw = test_data.get("blocks") or []
+    if not blocks_raw and test_data.get("questions"):
+        blocks_raw = [{"title": "", "context_json": None, "questions": test_data["questions"]}]
     created_blocks: list[tuple[dict, list[str]]] = []
 
     for block_data in blocks_raw:
         q_ids: list[str] = []
         for q_data in block_data.get("questions", []):
             prompt_json = q_data.get("prompt_json") or _wrap_text(q_data.get("prompt") or "")
-            options_json = q_data.get("options_json")
+            options_json = q_data.get("options_json") or q_data.get("options")
             if not options_json and q_data.get("media_ref"):
                 options_json = q_data["media_ref"]
+            q_type = q_data.get("type", "short_text")
+            correct_answer = q_data.get("correct_answer")
+            options_json, correct_answer = _normalize_options_and_correct(q_type, options_json, correct_answer)
             q = Question(
                 tenant_id=user.tenant_id,
-                type=q_data.get("type", "short_text"),
+                type=q_type,
                 prompt_json=prompt_json,
                 options_json=options_json,
-                correct_answer=q_data.get("correct_answer"),
+                correct_answer=correct_answer,
                 explanation_json=q_data.get("explanation_json"),
                 points=int(q_data.get("points", 1)),
                 tags=q_data.get("tags", []),
