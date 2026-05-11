@@ -146,6 +146,20 @@ class TestDetailOut(TestOut):
     blocks: list[BlockDetailOut]  # type: ignore[assignment]
 
 
+def _mobile_correct_answer(q_type: str, ca: Any) -> Any:
+    """Unwrap the internal DB envelope so the mobile app receives a plain value.
+    DB stores {"value":"B"} for MC/TF and {"values":[...]} for MS.
+    Mobile scoring expects plain "B" or [...].
+    """
+    if ca is None:
+        return None
+    if q_type in ("multiple_choice", "true_false"):
+        return ca.get("value", ca) if isinstance(ca, dict) else ca
+    if q_type == "multiple_select":
+        return ca.get("values", ca) if isinstance(ca, dict) else ca
+    return ca
+
+
 def _wrap_text(text: str) -> dict:
     return {"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": text}]}]}
 
@@ -727,7 +741,7 @@ def _to_practice_bundle(test: Test, questions_map: dict[str, Question]) -> dict:
                 "prompt": q.prompt_json,
                 "options": options,
                 "media_file_id": media_file_id,
-                "correct_answer": q.correct_answer,
+                "correct_answer": _mobile_correct_answer(q.type, q.correct_answer),
                 "points": q.points,
                 "tags": q.tags or [],
             })
