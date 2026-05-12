@@ -638,15 +638,15 @@ async def import_csv(
             if qtype in ("multiple_choice", "multiple_select") and options_raw:
                 options_json = [o.strip() for o in options_raw.split("|") if o.strip()]
 
-            # Build correct_answer
+            # Build correct_answer — plain values so web scoring, mobile, and exports all agree
             correct_answer: Any = None
             if qtype == "multiple_choice":
-                correct_answer = {"value": correct_raw} if correct_raw else None
+                correct_answer = correct_raw or None
             elif qtype == "multiple_select":
                 vals = [v.strip() for v in correct_raw.split(",") if v.strip()]
-                correct_answer = {"values": vals} if vals else None
+                correct_answer = vals or None
             elif qtype == "true_false":
-                correct_answer = {"value": correct_raw.lower()} if correct_raw else None
+                correct_answer = correct_raw.lower() or None
             elif qtype == "short_text":
                 correct_answer = {"text": correct_raw} if correct_raw else None
 
