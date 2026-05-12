@@ -81,8 +81,8 @@ A reusable question that can appear in multiple tests.
 
 | Question type | Value |
 |---|---|
-| `multiple_choice`, `true_false` | `{"value": "option_id"}` |
-| `multiple_select` | `{"values": ["a", "b"]}` |
+| `multiple_choice`, `true_false` | `"option_id"` — plain string matching the option's `id` field |
+| `multiple_select` | `["a", "b"]` — plain array of correct option ids |
 | `short_text` (e.g. spelling) | `{"text": "expected word"}` |
 | `long_text`, `file_upload` | `null` → requires manual review |
 | Informational types | `null` |

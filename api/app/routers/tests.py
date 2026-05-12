@@ -177,7 +177,8 @@ def _normalize_options_and_correct(
     Handles AI-generated JSONs that may use:
     - Flat string arrays: ["Paris", "London"] → [{id: "A", content_json: ...}, ...]
     - Tiptap nodes missing the paragraph wrapper (text directly under doc)
-    - Plain string correct_answer for choice types → {"value": "A"}
+    - {id, text} dicts without content_json
+    correct_answer is always stored as a plain string/array (never wrapped in an object).
     """
     if not isinstance(options_json, list) or not options_json:
         return options_json, correct_answer
@@ -192,7 +193,7 @@ def _normalize_options_and_correct(
         if isinstance(correct_answer, str) and q_type in ("multiple_choice", "true_false"):
             for i, opt_text in enumerate(options_json):
                 if opt_text == correct_answer:
-                    correct_answer = {"value": normed[i]["id"]}
+                    correct_answer = normed[i]["id"]   # plain string, e.g. "B"
                     break
         elif isinstance(correct_answer, list) and q_type == "multiple_select":
             id_map = {opt_text: normed[i]["id"] for i, opt_text in enumerate(options_json)}
@@ -974,6 +975,9 @@ async def import_test(
             q_type = q_data.get("type", "short_text")
             correct_answer = q_data.get("correct_answer")
             options_json, correct_answer = _normalize_options_and_correct(q_type, options_json, correct_answer)
+            # short_text: plain string → {"text": "..."} so the scoring engine can match it
+            if q_type == "short_text" and isinstance(correct_answer, str):
+                correct_answer = {"text": correct_answer}
 
             q = Question(
                 tenant_id=user.tenant_id,
@@ -1110,6 +1114,8 @@ async def import_test_bundle(
             q_type = q_data.get("type", "short_text")
             correct_answer = q_data.get("correct_answer")
             options_json, correct_answer = _normalize_options_and_correct(q_type, options_json, correct_answer)
+            if q_type == "short_text" and isinstance(correct_answer, str):
+                correct_answer = {"text": correct_answer}
             q = Question(
                 tenant_id=user.tenant_id,
                 type=q_type,

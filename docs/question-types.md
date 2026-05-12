@@ -37,13 +37,13 @@
 ```json
 // options_json
 [
-  {"id": "a", "content_json": {"type": "doc", "content": [...]}},
-  {"id": "b", "content_json": {"type": "doc", "content": [...]}},
-  {"id": "c", "content_json": {"type": "doc", "content": [...]}}
+  {"id": "a", "content_json": {"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "London"}]}]}},
+  {"id": "b", "content_json": {"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Paris"}]}]}},
+  {"id": "c", "content_json": {"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Berlin"}]}]}}
 ]
 
-// correct_answer
-{"value": "b"}
+// correct_answer — plain string matching the option id
+"b"
 
 // taker answer (value_json)
 {"selected": "b"}
@@ -56,8 +56,8 @@
 ```json
 // options_json — same list format as multiple_choice
 
-// correct_answer
-{"values": ["a", "c"]}
+// correct_answer — plain array of correct option ids
+["a", "c"]
 
 // taker answer (value_json)
 {"selected": ["a", "c"]}
@@ -72,12 +72,12 @@ Scoring is **all-or-nothing**: the selected set must exactly match the correct s
 ```json
 // options_json — typically two options: true / false (or Yes / No, etc.)
 [
-  {"id": "true", "content_json": ...},
-  {"id": "false", "content_json": ...}
+  {"id": "true",  "content_json": {"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "True"}]}]}},
+  {"id": "false", "content_json": {"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "False"}]}]}}
 ]
 
-// correct_answer
-{"value": "true"}
+// correct_answer — plain string "true" or "false"
+"true"
 
 // taker answer (value_json)
 {"selected": "true"}
@@ -153,7 +153,7 @@ Both are served via the same `/api/v1/media/{id}` endpoint with HTTP range suppo
 ## Adding a Question via API
 
 ```bash
-# multiple_choice
+# multiple_choice — correct_answer is a plain string matching the option id
 curl -X POST http://localhost:8000/api/v1/questions \
   -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
@@ -165,11 +165,11 @@ curl -X POST http://localhost:8000/api/v1/questions \
       {"id": "b", "text": "Paris"},
       {"id": "c", "text": "Berlin"}
     ],
-    "correct_answer": {"value": "b"},
+    "correct_answer": "b",
     "points": 1
   }'
 
-# short_text with auto-scoring
+# short_text with auto-scoring — correct_answer is {"text": "..."}
 curl -X POST http://localhost:8000/api/v1/questions \
   -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
@@ -179,4 +179,22 @@ curl -X POST http://localhost:8000/api/v1/questions \
     "correct_answer": {"text": "necessary"},
     "points": 1
   }'
+```
+
+---
+
+## Import / Export JSON format
+
+When importing or exporting tests as `.json` files, `options_json` uses the same `{id, content_json}` structure. The `correct_answer` is always a **plain string** (for MC/TF), **plain array** (for MS), or **`{text:"..."}` object** (for short_text).
+
+The import endpoint also accepts a simplified format where `options_json` is a flat list of strings and `correct_answer` is the matching option text — it will be normalised automatically:
+
+```json
+{
+  "type": "multiple_choice",
+  "prompt_json": {"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Capital of France?"}]}]},
+  "options_json": ["London", "Paris", "Berlin"],
+  "correct_answer": "Paris",
+  "points": 1
+}
 ```
