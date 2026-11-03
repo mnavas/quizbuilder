@@ -1,0 +1,48 @@
+{
+  "title": "World Geography (Simple format)",
+  "description": "Demonstrates the Simple import format: plain prompts, flat option lists, and correct answers given by option text. QuizBuilder normalises all of this to the canonical stored form on import.",
+  "mode": "async",
+  "access": "open",
+  "show_score": "at_end",
+  "show_correct_answers": "at_end",
+  "multiple_select_scoring": "partial",
+  "blocks": [
+    {
+      "title": "Capitals",
+      "questions": [
+        {
+          "type": "multiple_choice",
+          "prompt": "What is the capital of France?",
+          "options": ["London", "Paris", "Berlin"],
+          "correct_answer": "Paris",
+          "points": 1
+        },
+        {
+          "type": "true_false",
+          "prompt": "Canberra is the capital of Australia.",
+          "options": ["True", "False"],
+          "correct_answer": "True",
+          "points": 1
+        }
+      ]
+    },
+    {
+      "title": "Continents & rivers",
+      "questions": [
+        {
+          "type": "multiple_select",
+          "prompt": "Which of these countries are in South America?",
+          "options": ["Brazil", "Spain", "Peru", "Egypt"],
+          "correct_answer": ["Brazil", "Peru"],
+          "points": 2
+        },
+        {
+          "type": "short_text",
+          "prompt": "Name the longest river in Africa.",
+          "correct_answer": "Nile",
+          "points": 1
+        }
+      ]
+    }
+  ]
+}

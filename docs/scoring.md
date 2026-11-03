@@ -15,8 +15,8 @@ passed    = score_pct >= passing_score_pct  (if a threshold is set)
 
 | Type | Logic | `needs_review` |
 |---|---|---|
-| `multiple_choice` | `selected == correct_answer.value` → full points | No |
-| `multiple_select` | Selected set must **exactly match** correct set → full points (all-or-nothing) | No |
+| `multiple_choice` | `selected` matches the correct option id → full points | No |
+| `multiple_select` | Depends on the test's `multiple_select_scoring` (all-or-nothing or partial) — see below | No |
 | `true_false` | Case-insensitive string match → full points | No |
 | `short_text` (with `correct_answer.text`) | Lowercase + trim comparison → full points | No |
 | `short_text` (no `correct_answer`) | Score = null | Yes |
@@ -25,7 +25,10 @@ passed    = score_pct >= passing_score_pct  (if a threshold is set)
 | `audio_prompt`, `video_prompt`, `passage`, `divider` | Score = 0, no points expected | No |
 | Unknown type | Score = null | Yes |
 
-**All-or-nothing for `multiple_select`:** partial credit is not yet supported. The selected set must be identical to the correct set; any missing or extra selection scores zero.
+**`multiple_select` scoring** is controlled per-test by the `multiple_select_scoring` field:
+
+- `all_or_nothing` (default): the selected set must be identical to the correct set; any missing or extra selection scores zero.
+- `partial`: each correct selection earns `points / (number of correct options)`, floored to an integer. Extra (wrong) selections carry no penalty.
 
 ---
 
@@ -58,10 +61,17 @@ Response:
   "is_correct": true,
   "needs_review": false,
   "auto_score": 1,
-  "correct_answer": {"value": "b"},
+  "correct_answer": "b",
   "options_json": [...]
 }
 ```
+
+> **Note on `correct_answer` shape.** The canonical stored form is a plain string (`"b"`),
+> plain array (`["a","c"]`), or `{"text":"…"}` for short_text. All write paths now normalise to this
+> form (`app/normalize.py`), and migration `007` rewrites older rows. The scoring engine still
+> tolerates the legacy wrapped envelope — `{"value":"b"}` / `{"values":["a","c"]}` — and matches
+> option ids case-insensitively, as a safety net. See
+> [question-types.md › Two authoring formats](question-types.md#two-authoring-formats-simple-vs-internal).
 
 `is_correct` is `null` when the question requires manual review. This endpoint is only available when `show_correct_answers == "per_question"` — it returns 403 otherwise.
 

@@ -170,6 +170,10 @@ function MediaPlayer({ mediaRef, apiBase }: { mediaRef: any; apiBase: string }) 
 export default function TakePage() {
   const { token } = useParams() as { token: string };
   const [email, setEmail] = useState("");
+  const [accessCode, setAccessCode] = useState("");
+  const [needsLogin, setNeedsLogin] = useState(false);
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
   const [started, setStarted] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
   const [current, setCurrent] = useState(0);
@@ -181,21 +185,43 @@ export default function TakePage() {
   const saving = useRef(false);
   const apiBase = API_BASE;
 
-  async function handleStart() {
+  async function handleStart(authToken?: string) {
     setLoading(true); setError("");
     try {
-      const res = await api.post(`/sessions/take/${token.toUpperCase()}`, { taker_email: email || null });
+      const cfg = authToken ? { headers: { Authorization: `Bearer ${authToken}` } } : undefined;
+      const res = await api.post(`/sessions/take/${token.toUpperCase()}`, {
+        taker_email: email || null,
+        access_code: accessCode.trim() || null,
+      }, cfg);
       setSession(res.data);
       setStarted(true);
     } catch (e: any) {
       if (!e?.response) {
         setError("Connection error. Please try again — if the problem persists, contact your instructor.");
+      } else if (e.response.status === 401) {
+        // Registered-access test — reveal the login form.
+        setNeedsLogin(true);
+        setError("This test requires you to log in.");
       } else {
         const detail = e.response.data?.detail;
         setError(typeof detail === "string" ? detail : "Could not start the test. Check the code and try again.");
       }
     }
     finally { setLoading(false); }
+  }
+
+  async function handleLogin() {
+    if (!loginEmail || !loginPassword) { setError("Enter your email and password."); return; }
+    setLoading(true); setError("");
+    try {
+      const res = await api.post("/auth/login", { email: loginEmail, password: loginPassword });
+      // Retry the start with the taker's own token (not stored as a cookie — this is a shared device).
+      await handleStart(res.data.access_token);
+    } catch (e: any) {
+      const detail = e?.response?.data?.detail;
+      setError(typeof detail === "string" ? detail : "Login failed. Check your email and password.");
+      setLoading(false);
+    }
   }
 
   async function saveAnswer(qId: string, value: any) {
@@ -236,13 +262,36 @@ export default function TakePage() {
           <Image src="/icon-64.png" alt="QuizBuilder" width={32} height={32} />
           <h1 className="text-2xl font-bold text-amber-500">QuizBuilder</h1>
         </div>
-        <p className="text-sm text-gray-500 text-center">Enter your email to start (optional)</p>
+        <p className="text-sm text-gray-500 text-center">
+          {needsLogin ? "Log in to take this test" : "Enter your email to start (optional)"}
+        </p>
         {error && <p className="text-sm text-red-600 bg-red-50 rounded px-3 py-2">{error}</p>}
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-          placeholder="your@email.com (optional)" className="input w-full" />
-        <button onClick={handleStart} disabled={loading} className="btn-primary w-full">
-          {loading ? "Starting…" : "Start Test →"}
-        </button>
+        {needsLogin ? (
+          <>
+            <input type="email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)}
+              placeholder="Email" autoComplete="username" className="input w-full" />
+            <input type="password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") handleLogin(); }}
+              placeholder="Password" autoComplete="current-password" className="input w-full" />
+            <button onClick={handleLogin} disabled={loading} className="btn-primary w-full">
+              {loading ? "Signing in…" : "Log in & start →"}
+            </button>
+          </>
+        ) : (
+          <>
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+              placeholder="your@email.com (optional)" className="input w-full" />
+            <input type="text" value={accessCode}
+              onChange={(e) => setAccessCode(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") handleStart(); }}
+              placeholder="Access code (if you were given one)"
+              autoCapitalize="characters" autoComplete="off"
+              className="input w-full uppercase tracking-widest" />
+            <button onClick={() => handleStart()} disabled={loading} className="btn-primary w-full">
+              {loading ? "Starting…" : "Start Test →"}
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

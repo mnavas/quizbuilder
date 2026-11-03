@@ -1,0 +1,5 @@
+type,prompt,options,correct_answer,points,tags,block
+multiple_choice,What is 2 + 2?,3|4|5,4,1,math,Arithmetic
+multiple_select,Which of these numbers are even?,1|2|3|4,"2,4",2,math,Arithmetic
+true_false,The sky appears green on a clear day.,,false,1,,General knowledge
+short_text,What is the capital of Japan?,,Tokyo,1,geography,General knowledge

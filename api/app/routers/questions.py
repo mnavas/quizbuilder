@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.auth import require_role
 from app.db import get_db
 from app.models.core import Question, User
+from app.normalize import normalize_correct_answer
 
 router = APIRouter()
 
@@ -155,7 +156,7 @@ async def create_question(
         type=body.type,
         prompt_json=_resolve_prompt(body),
         options_json=options_json,
-        correct_answer=body.correct_answer,
+        correct_answer=normalize_correct_answer(body.type, body.correct_answer),
         explanation_json=_resolve_explanation(body),
         points=body.points,
         tags=body.tags,
@@ -193,7 +194,7 @@ async def update_question(
     q.type = body.type
     q.prompt_json = _resolve_prompt(body)
     q.options_json = cast(Any, options_json)
-    q.correct_answer = body.correct_answer  # type: ignore[assignment]
+    q.correct_answer = normalize_correct_answer(body.type, body.correct_answer)  # type: ignore[assignment]
     q.explanation_json = _resolve_explanation(body)
     q.points = body.points
     q.tags = body.tags

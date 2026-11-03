@@ -23,9 +23,10 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.auth import get_optional_user
 from app.db import get_db
 from app.models.core import (
-    Answer, Question, Session, SessionQuestion, Test, TestBlock,
+    AccessCode, Answer, Question, Session, SessionQuestion, Test, TestBlock, User,
 )
 from app.scoring import score_answer
 
@@ -36,6 +37,7 @@ router = APIRouter()
 
 class StartSessionRequest(BaseModel):
     taker_email: str | None = None
+    access_code: str | None = None   # required when the test's access == "code"
 
 
 class SaveAnswerRequest(BaseModel):
@@ -215,6 +217,7 @@ async def start_session(
     link_token: str,
     body: StartSessionRequest,
     db: AsyncSession = Depends(get_db),
+    user: User | None = Depends(get_optional_user),
 ):
     """
     Start a new test session for a taker.
@@ -232,8 +235,63 @@ async def start_session(
     if test.available_until and now > test.available_until:
         raise HTTPException(status_code=403, detail="This test has closed")
 
-    # Check attempt limits for registered users (simplified: skip for open/anonymous)
+    # ── Access control ──────────────────────────────────────────────────────
     taker_id: str | None = None
+    access_code_obj: AccessCode | None = None
+
+    if test.access == "registered":
+        if user is None:
+            raise HTTPException(status_code=401, detail="This test requires you to log in")
+        if user.tenant_id != test.tenant_id:
+            raise HTTPException(status_code=403, detail="This test belongs to a different organization")
+        taker_id = user.id
+    elif test.access == "code":
+        code = (body.access_code or "").strip()
+        if not code:
+            raise HTTPException(status_code=403, detail="An access code is required for this test")
+        res = await db.execute(
+            select(AccessCode).where(
+                AccessCode.test_id == test.id,
+                func.upper(AccessCode.code) == code.upper(),
+            )
+        )
+        access_code_obj = res.scalar_one_or_none()
+        if access_code_obj is None or access_code_obj.revoked:
+            raise HTTPException(status_code=403, detail="Invalid or revoked access code")
+        if access_code_obj.max_uses is not None and access_code_obj.use_count >= access_code_obj.max_uses:
+            raise HTTPException(status_code=403, detail="This access code has no remaining uses")
+    # test.access == "open": no gate; an optional taker_email identifies the attempt.
+
+    # ── Attempt limits ──────────────────────────────────────────────────────
+    # Count attempts against whatever identity we have. Fully anonymous open
+    # takers (no email) cannot be limited.
+    attempt_clause = None
+    if taker_id is not None:
+        attempt_clause = Session.taker_id == taker_id
+    elif access_code_obj is not None:
+        attempt_clause = Session.access_code_id == access_code_obj.id
+    elif body.taker_email:
+        attempt_clause = Session.taker_email == body.taker_email
+
+    if attempt_clause is not None:
+        limit: int | None = None
+        if not test.allow_multiple_attempts:
+            limit = 1
+        elif test.max_attempts is not None:
+            limit = test.max_attempts
+        if limit is not None:
+            prior_res = await db.execute(
+                select(func.count()).select_from(Session).where(
+                    Session.test_id == test.id,
+                    attempt_clause,
+                    Session.status.in_(("active", "submitted")),
+                )
+            )
+            if prior_res.scalar_one() >= limit:
+                raise HTTPException(
+                    status_code=403,
+                    detail="You have reached the maximum number of attempts for this test",
+                )
 
     # Build session
     expires_at = None
@@ -244,11 +302,16 @@ async def start_session(
         test_id=test.id,
         taker_id=taker_id,
         taker_email=body.taker_email,
+        access_code_id=access_code_obj.id if access_code_obj else None,
         status="active",
         expires_at=expires_at,
     )
     db.add(session)
     await db.flush()
+
+    # Consume one use of the access code (counted at start — a started attempt burns a use)
+    if access_code_obj is not None:
+        access_code_obj.use_count += 1
 
     # Re-resolve with session_id seed (for draw_count reproducibility on resume)
     q_ids = _resolve_questions(test, test.randomize_questions, session.id)

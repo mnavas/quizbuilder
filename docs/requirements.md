@@ -1,7 +1,14 @@
 # QuizBuilder — Product Requirements
 **Version:** 0.1
 **Last Updated:** 2026-04-04
-**Stage:** Pre-development
+**Stage:** Pre-development (historical)
+
+> ⚠️ **This is the original pre-development vision, not the current spec.** Parts of it are built,
+> parts are planned, and the product has since grown features this doc predates (e.g. the real-time
+> [Live Game](live-game.md) mode). For what actually ships today, see
+> [overview.md](overview.md), [question-types.md](question-types.md), [data-model.md](data-model.md),
+> and [api-reference.md](api-reference.md). Items known **not** to be implemented yet are marked
+> _(planned)_ below.
 
 ---
 
@@ -17,8 +24,8 @@ QuizBuilder is an online assessment platform for creating, administering, and sc
 |---|---|
 | **Test** | A collection of questions with delivery configuration (mode, timing, access, scoring) |
 | **Question** | A single item with prompt, rich content, answer options, and optional correct answer |
-| **Pool** | A named set of questions from which questions are drawn randomly |
-| **Block** | A section of a test, each optionally backed by its own pool |
+| **Pool** | _(planned)_ A named set of questions from which questions are drawn randomly |
+| **Block** | A section of a test. _(Per-block pools are planned; today randomization is per-test via `draw_count`, which draws whole blocks.)_ |
 | **Session** | One attempt by one taker on one test |
 | **Submission** | The completed answers from a session |
 | **Taker** | The person completing a test — may be anonymous, registered, or code-identified |
@@ -66,10 +73,10 @@ Attempt limits are configured per test, not per access type. A code can be used 
 | `multiple_choice` | One correct answer from a list of options |
 | `multiple_select` | One or more correct answers from a list |
 | `true_false` | Binary choice |
-| `ordering` | Arrange items in correct sequence |
-| `matching` | Match left-column items to right-column items |
-| `fill_in_the_blank` | One or more blanks within a sentence or paragraph |
-| `numeric` | Exact number or number within a tolerance range |
+| `ordering` | _(planned)_ Arrange items in correct sequence |
+| `matching` | _(planned)_ Match left-column items to right-column items |
+| `fill_in_the_blank` | _(planned)_ One or more blanks within a sentence or paragraph |
+| `numeric` | _(planned)_ Exact number or number within a tolerance range |
 
 ### 5.2 Open (manual review)
 
@@ -134,7 +141,7 @@ test:
   allow_multiple_attempts ← bool (async only)
   max_attempts            ← int or null
   time_limit_minutes      ← null = untimed
-  time_per_question       ← null = not per-question
+  time_per_question       ← (planned) null = not per-question
   show_score              ← at_end | never | per_question
   show_correct_answers    ← at_end | never | per_question | after_review
   passing_score_pct       ← optional
@@ -142,9 +149,9 @@ test:
   blocks[]:
     title                 ← optional block heading
     instructions          ← rich text shown at block start
-    questions[]           ← fixed list, OR:
-    pool_id               ← draw randomly from this pool
-    pool_draw_count       ← how many to draw from the pool
+    questions[]           ← fixed list of questions
+    pool_id               ← (planned) draw randomly from this pool
+    pool_draw_count       ← (planned) how many to draw from the pool
 ```
 
 ---

@@ -76,6 +76,16 @@ Students open that URL in their browser — no installation needed on their devi
 
 ---
 
+## Documentation
+
+Full documentation is in [`docs/`](docs/) — start with the [overview](docs/overview.md):
+
+- [Getting started](docs/getting-started.md) — install, configuration, first run
+- [Question types](docs/question-types.md) · [Scoring](docs/scoring.md) · [Data model](docs/data-model.md)
+- [Live game mode](docs/live-game.md) · [API reference](docs/api-reference.md) · [Deployment](docs/deployment.md)
+
+---
+
 ## License
 
 Released under the [GNU General Public License v3.0](LICENSE).

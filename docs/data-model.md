@@ -15,6 +15,9 @@ Tenant
         └── Session (one taker attempt)
               └── SessionQuestion (the exact question draw + order)
               └── Answer (one response per question)
+        └── LiveGame (a Kahoot-style live session)
+              └── LivePlayer (one joined player)
+              └── LiveAnswer (one player's answer to one question)
 ```
 
 ---
@@ -159,6 +162,34 @@ When `context_json` is `null` and the block has a title, the taker UI falls back
 
 ---
 
+### AccessCode
+
+A code issued for a `code`-gated test. Takers supply a valid code to start a session.
+
+`POST /sessions/take/{link_token}` enforces this: when `test.access == "code"` the request must
+include a matching, non-revoked code with uses remaining, or it is rejected with 403. A successful
+start sets the session's `access_code_id` and increments `use_count`.
+
+> **Status:** all three access modes are end-to-end. `open` is public. `code` — admins generate/revoke
+> codes from the **🔑 Access codes** action on the Tests page (backed by the `/tests/{id}/access-codes`
+> endpoints, see [api-reference.md](api-reference.md)); the take page collects a code. `registered` —
+> the take page prompts the taker to log in and starts the session with their own token; accounts are
+> provisioned by an admin with the `candidate` role via `POST /users`. A taker's login token is used
+> only for the start request and is not persisted as a cookie (the take page is a shared device).
+
+| Column | Type | Description |
+|---|---|---|
+| `id` | UUID | |
+| `test_id` | UUID FK | |
+| `code` | string | Unique across the instance; matched case-insensitively |
+| `max_uses` | int | Null = unlimited |
+| `use_count` | int | Incremented on each session **start** (a started attempt consumes a use) |
+| `revoked` | bool | Revoked codes cannot be used |
+| `created_by` | UUID FK | User who generated the code |
+| `created_at` | timestamp | |
+
+---
+
 ### Session
 
 One attempt by one taker on one test.
@@ -233,3 +264,53 @@ An uploaded binary asset stored on the local filesystem.
 | `storage_path` | string | Relative to `MEDIA_ROOT`: `{tenant_id}/{media_id}/{filename}` |
 
 Files are served at `/api/v1/media/{id}` with HTTP range support for audio/video streaming.
+
+---
+
+## Live Game models
+
+Power the real-time competitive mode (see [live-game.md](live-game.md)). Only `multiple_choice` and
+`true_false` questions participate; the eligible question ids are resolved and frozen at game creation.
+
+### LiveGame
+
+| Column | Type | Description |
+|---|---|---|
+| `id` | UUID | |
+| `test_id` | UUID FK | Source test |
+| `tenant_id` | UUID FK | |
+| `created_by` | UUID FK | Host user |
+| `pin` | string(6) | Join PIN (indexed) |
+| `state` | string | `waiting` \| `question_active` \| `question_closed` \| `finished` |
+| `current_question_index` | int | `-1` while waiting; 0-based once started |
+| `current_question_started_at` | timestamp | Server time the current question opened — basis for speed scoring |
+| `time_limit_seconds` | int | Per-question countdown (default 20; clamped 5–120) |
+| `question_ids_json` | JSONB (string[]) | Ordered eligible question ids, frozen at creation |
+| `created_at` | timestamp | |
+
+### LivePlayer
+
+| Column | Type | Description |
+|---|---|---|
+| `id` | UUID | |
+| `game_id` | UUID FK | |
+| `nickname` | string | Display name |
+| `avatar_color` | string(7) | Hex color, default `#f59e0b` |
+| `total_score` | int | Running cumulative score |
+| `joined_at` | timestamp | |
+
+### LiveAnswer
+
+One player's answer to one question. Unique on `(game_id, player_id, question_id)` — resubmitting replaces it.
+
+| Column | Type | Description |
+|---|---|---|
+| `id` | UUID | |
+| `game_id` | UUID FK | |
+| `player_id` | UUID FK | |
+| `question_id` | UUID FK | |
+| `value_json` | JSONB | `{"selected": "option_id"}` |
+| `answered_at` | timestamp | Server receive time |
+| `time_ms` | int | Response time used in the speed-score formula |
+| `points_earned` | int | Points awarded for this answer |
+| `is_correct` | bool | |

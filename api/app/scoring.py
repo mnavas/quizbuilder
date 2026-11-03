@@ -47,12 +47,12 @@ def score_answer(question: Question, value: dict | None, multiple_select_scoring
 
 
 def _score_multiple_choice(question: Question, value: dict) -> tuple[int, bool]:
-    """Award full points when value.selected matches correct_answer.value (string comparison)."""
+    """Award full points when the selected option id matches the correct id (case-insensitive)."""
     selected = value.get("selected")
     correct = question.correct_answer
-    if isinstance(correct, dict):
+    if isinstance(correct, dict):  # legacy {"value": ...} envelope
         correct = correct.get("value")
-    if selected and str(selected) == str(correct):
+    if selected is not None and correct is not None and str(selected).strip().lower() == str(correct).strip().lower():
         return question.points, False
     return 0, False
 
@@ -70,16 +70,20 @@ def _score_multiple_select(question: Question, value: dict, scoring: str = "all_
       ["A", "C"]         — bare JSON array (import format)
       "A,C"              — comma-separated string (simplified import format)
     """
-    selected: set = set(value.get("selected", []))
+    selected_raw = value.get("selected", [])
     correct_raw = question.correct_answer
-    if isinstance(correct_raw, dict):
-        correct = set(correct_raw.get("values", []))
+    if isinstance(correct_raw, dict):  # legacy {"values": [...]} envelope
+        correct_list = correct_raw.get("values", [])
     elif isinstance(correct_raw, list):
-        correct = set(correct_raw)
+        correct_list = correct_raw
     elif isinstance(correct_raw, str) and correct_raw.strip():
-        correct = set(v.strip() for v in correct_raw.split(",") if v.strip())
+        correct_list = [v.strip() for v in correct_raw.split(",") if v.strip()]
     else:
-        correct = set()
+        correct_list = []
+
+    # Compare option ids case-insensitively
+    selected = {str(s).strip().lower() for s in selected_raw}
+    correct = {str(c).strip().lower() for c in correct_list}
 
     if selected == correct:
         return question.points, False

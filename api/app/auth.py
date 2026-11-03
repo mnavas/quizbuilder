@@ -35,6 +35,7 @@ REFRESH_TOKEN_EXPIRE_DAYS = 30
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 bearer_scheme = HTTPBearer()
+optional_bearer_scheme = HTTPBearer(auto_error=False)
 
 
 def hash_password(password: str) -> str:
@@ -102,6 +103,31 @@ async def get_current_user(
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
     return user
+
+
+async def get_optional_user(
+    credentials: HTTPAuthorizationCredentials | None = Depends(optional_bearer_scheme),
+    db: AsyncSession = Depends(get_db),
+) -> User | None:
+    """
+    Like get_current_user, but returns None instead of raising when no (or an invalid)
+    Bearer token is present. Used by endpoints that are public by default but can bind
+    a session to a logged-in taker when one is authenticated (e.g. registered-access tests).
+    """
+    if credentials is None:
+        return None
+    try:
+        payload = jwt.decode(credentials.credentials, settings.secret_key, algorithms=[ALGORITHM])
+        if payload.get("type") != "access":
+            return None
+        user_id: str = payload.get("sub")
+        if not user_id:
+            return None
+    except JWTError:
+        return None
+
+    result = await db.execute(select(User).where(User.id == user_id, User.is_active))
+    return result.scalar_one_or_none()
 
 
 def require_role(*roles: str):

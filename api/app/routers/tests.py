@@ -13,14 +13,15 @@ from typing import Any
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.auth import require_role
 from app.config import settings
 from app.db import get_db
-from app.models.core import MediaFile, Question, Test, TestBlock, TestBlockQuestion, User
+from app.models.core import AccessCode, MediaFile, Question, Test, TestBlock, TestBlockQuestion, User
+from app.normalize import normalize_correct_answer
 
 router = APIRouter()
 
@@ -559,6 +560,139 @@ async def clone_test(
     return _test_out(await _load_test(new_test.id, user.tenant_id, db))
 
 
+# ── Access codes ──────────────────────────────────────────────────────────────
+
+# Unambiguous alphabet — no 0/O, 1/I/L to avoid transcription errors.
+_CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"
+_MAX_BULK_CODES = 500
+
+
+class AccessCodeCreate(BaseModel):
+    count: int = 1
+    max_uses: int | None = None   # null = unlimited uses per code
+    prefix: str | None = None     # optional human-friendly prefix, e.g. "CLASS-"
+
+
+class AccessCodeOut(BaseModel):
+    id: str
+    code: str
+    max_uses: int | None
+    use_count: int
+    remaining: int | None         # null when max_uses is null (unlimited)
+    revoked: bool
+    created_at: str
+
+
+def _access_code_out(ac: AccessCode) -> AccessCodeOut:
+    remaining = None if ac.max_uses is None else max(ac.max_uses - ac.use_count, 0)
+    return AccessCodeOut(
+        id=ac.id,
+        code=ac.code,
+        max_uses=ac.max_uses,
+        use_count=ac.use_count,
+        remaining=remaining,
+        revoked=ac.revoked,
+        created_at=ac.created_at.isoformat(),
+    )
+
+
+async def _get_owned_test(test_id: str, tenant_id: str, db: AsyncSession) -> Test:
+    """Lightweight tenant-scoped test lookup (no block eager-loading)."""
+    result = await db.execute(
+        select(Test).where(Test.id == test_id, Test.tenant_id == tenant_id, Test.deleted_at.is_(None))
+    )
+    test = result.scalar_one_or_none()
+    if not test:
+        raise HTTPException(status_code=404, detail="Test not found")
+    return test
+
+
+async def _generate_unique_code(db: AsyncSession, prefix: str, length: int = 6) -> str:
+    for _ in range(25):
+        body = "".join(secrets.choice(_CODE_ALPHABET) for _ in range(length))
+        code = f"{prefix}{body}"
+        exists = await db.execute(
+            select(AccessCode.id).where(func.upper(AccessCode.code) == code.upper())
+        )
+        if exists.scalar_one_or_none() is None:
+            return code
+    raise HTTPException(status_code=500, detail="Could not generate a unique access code; try again")
+
+
+@router.get("/{test_id}/access-codes", response_model=list[AccessCodeOut])
+async def list_access_codes(
+    test_id: str,
+    user: User = Depends(require_role("admin", "manager")),
+    db: AsyncSession = Depends(get_db),
+):
+    """List all access codes for a test (newest first)."""
+    await _get_owned_test(test_id, user.tenant_id, db)
+    result = await db.execute(
+        select(AccessCode).where(AccessCode.test_id == test_id).order_by(AccessCode.created_at.desc())
+    )
+    return [_access_code_out(ac) for ac in result.scalars().all()]
+
+
+@router.post("/{test_id}/access-codes", response_model=list[AccessCodeOut], status_code=status.HTTP_201_CREATED)
+async def create_access_codes(
+    test_id: str,
+    body: AccessCodeCreate,
+    user: User = Depends(require_role("admin", "manager")),
+    db: AsyncSession = Depends(get_db),
+):
+    """Generate one or more access codes for a test (e.g. one per student in a class)."""
+    await _get_owned_test(test_id, user.tenant_id, db)
+
+    if body.count < 1 or body.count > _MAX_BULK_CODES:
+        raise HTTPException(status_code=400, detail=f"count must be between 1 and {_MAX_BULK_CODES}")
+    if body.max_uses is not None and body.max_uses < 1:
+        raise HTTPException(status_code=400, detail="max_uses must be at least 1 (or null for unlimited)")
+
+    # Sanitise prefix: letters/digits/dash/underscore only, uppercased, max 16 chars.
+    prefix = ""
+    if body.prefix:
+        prefix = "".join(c for c in body.prefix.upper() if c.isalnum() or c in "-_")[:16]
+
+    created_ids: list[str] = []
+    for _ in range(body.count):
+        ac = AccessCode(
+            test_id=test_id,
+            code=await _generate_unique_code(db, prefix),
+            max_uses=body.max_uses,
+            created_by=user.id,
+        )
+        db.add(ac)
+        await db.flush()
+        created_ids.append(ac.id)
+
+    await db.commit()
+
+    # Re-select so the server-default created_at is populated.
+    result = await db.execute(
+        select(AccessCode).where(AccessCode.id.in_(created_ids)).order_by(AccessCode.created_at.desc())
+    )
+    return [_access_code_out(ac) for ac in result.scalars().all()]
+
+
+@router.delete("/{test_id}/access-codes/{code_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def revoke_access_code(
+    test_id: str,
+    code_id: str,
+    user: User = Depends(require_role("admin", "manager")),
+    db: AsyncSession = Depends(get_db),
+):
+    """Revoke an access code. Soft — the row is kept (set `revoked`) so session history stays intact."""
+    await _get_owned_test(test_id, user.tenant_id, db)
+    result = await db.execute(
+        select(AccessCode).where(AccessCode.id == code_id, AccessCode.test_id == test_id)
+    )
+    ac = result.scalar_one_or_none()
+    if not ac:
+        raise HTTPException(status_code=404, detail="Access code not found")
+    ac.revoked = True
+    await db.commit()
+
+
 # ── CSV import ────────────────────────────────────────────────────────────────
 
 @router.post("/import-csv", response_model=TestOut, status_code=status.HTTP_201_CREATED)
@@ -650,6 +784,10 @@ async def import_csv(
                 correct_answer = correct_raw.lower() or None
             elif qtype == "short_text":
                 correct_answer = {"text": correct_raw} if correct_raw else None
+
+            # Canonicalise: flat string options → [{id, content_json}], correct text → option id
+            options_json, correct_answer = _normalize_options_and_correct(qtype, options_json, correct_answer)
+            correct_answer = normalize_correct_answer(qtype, correct_answer)
 
             tags = [t.strip() for t in tags_raw.split(",") if t.strip()] if tags_raw else []
 
@@ -975,9 +1113,7 @@ async def import_test(
             q_type = q_data.get("type", "short_text")
             correct_answer = q_data.get("correct_answer")
             options_json, correct_answer = _normalize_options_and_correct(q_type, options_json, correct_answer)
-            # short_text: plain string → {"text": "..."} so the scoring engine can match it
-            if q_type == "short_text" and isinstance(correct_answer, str):
-                correct_answer = {"text": correct_answer}
+            correct_answer = normalize_correct_answer(q_type, correct_answer)
 
             q = Question(
                 tenant_id=user.tenant_id,

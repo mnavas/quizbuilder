@@ -151,7 +151,7 @@ type QFormState = {
   type: string;
   prompt_json: any;
   options: { id: string; text: string }[];
-  correct_answer: string;
+  correct_answer: string | string[];   // string for MC/TF/short_text, string[] for multiple_select
   explanation_json: any;
   points: number;
   tags: string;
@@ -201,11 +201,12 @@ function questionToForm(blockIdx: number, q: QuestionData): QFormState {
     type: q.type,
     prompt_json: q.prompt_json,
     options: opts.length ? opts : [{ id: "a", text: "" }],
-    correct_answer: q.type === "short_text"
-      ? (q.correct_answer?.text ?? "")
-      : typeof q.correct_answer === "string"
-        ? q.correct_answer
-        : JSON.stringify(q.correct_answer ?? ""),
+    correct_answer:
+      q.type === "short_text"
+        ? (q.correct_answer?.text ?? "")
+        : q.type === "multiple_select"
+          ? (Array.isArray(q.correct_answer) ? q.correct_answer : (q.correct_answer?.values ?? []))
+          : (typeof q.correct_answer === "string" ? q.correct_answer : (q.correct_answer?.value ?? "")),
     explanation_json: q.explanation_json,
     points: q.points,
     tags: (q.tags || []).join(", "),
@@ -445,12 +446,15 @@ export default function TestForm({ testId }: Props) {
       };
       if (hasOptions) {
         payload.options = qForm.options;
-        payload.correct_answer = qForm.correct_answer || null;
+        if (qForm.type === "multiple_select") {
+          payload.correct_answer = Array.isArray(qForm.correct_answer) ? qForm.correct_answer : [];
+        } else {
+          payload.correct_answer = (typeof qForm.correct_answer === "string" ? qForm.correct_answer : "") || null;
+        }
       }
       if (qForm.type === "short_text") {
-        payload.correct_answer = qForm.correct_answer.trim()
-          ? { text: qForm.correct_answer.trim() }
-          : null;
+        const text = typeof qForm.correct_answer === "string" ? qForm.correct_answer.trim() : "";
+        payload.correct_answer = text ? { text } : null;
       }
       if (isMedia && qForm.media_file_id) {
         payload.media_ref = { media_file_id: qForm.media_file_id, mime_type: qForm.media_mime_type };
@@ -850,7 +854,12 @@ export default function TestForm({ testId }: Props) {
 
                             <div>
                               <label className="label">Type</label>
-                              <select value={qForm.type} onChange={(e) => setQ("type", e.target.value)} className="input w-full">
+                              <select value={qForm.type}
+                                onChange={(e) => {
+                                  const newType = e.target.value;
+                                  setQForm((f) => f ? { ...f, type: newType, correct_answer: newType === "multiple_select" ? [] : "" } : f);
+                                }}
+                                className="input w-full">
                                 {QUESTION_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
                               </select>
                             </div>
@@ -921,13 +930,42 @@ export default function TestForm({ testId }: Props) {
                               </div>
                             )}
 
-                            {needsOptions && (
+                            {needsOptions && qForm.type === "multiple_select" && (
                               <div>
-                                <label className="label">Correct answer (option id)</label>
-                                <input value={qForm.correct_answer}
+                                <label className="label">Correct answers (tick all that apply)</label>
+                                <div className="space-y-1">
+                                  {qForm.options.map((opt) => {
+                                    const arr = Array.isArray(qForm.correct_answer) ? qForm.correct_answer : [];
+                                    return (
+                                      <label key={opt.id} className="flex items-center gap-2 text-sm">
+                                        <input type="checkbox" checked={arr.includes(opt.id)}
+                                          onChange={(e) => {
+                                            const next = e.target.checked
+                                              ? [...arr, opt.id]
+                                              : arr.filter((x) => x !== opt.id);
+                                            setQ("correct_answer", next);
+                                          }} />
+                                        <span className="font-mono text-xs text-gray-500 w-6">{opt.id}</span>
+                                        <span className="text-gray-700">{opt.text || <em className="text-gray-300">empty</em>}</span>
+                                      </label>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            )}
+
+                            {needsOptions && qForm.type !== "multiple_select" && (
+                              <div>
+                                <label className="label">Correct answer</label>
+                                <select
+                                  value={typeof qForm.correct_answer === "string" ? qForm.correct_answer : ""}
                                   onChange={(e) => setQ("correct_answer", e.target.value)}
-                                  className="input w-full"
-                                  placeholder='e.g. "a" or ["a","b"] for multiple_select' />
+                                  className="input w-full">
+                                  <option value="">— select the correct option —</option>
+                                  {qForm.options.map((opt) => (
+                                    <option key={opt.id} value={opt.id}>{opt.id}{opt.text ? ` — ${opt.text}` : ""}</option>
+                                  ))}
+                                </select>
                               </div>
                             )}
 

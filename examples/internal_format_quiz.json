@@ -1,0 +1,68 @@
+{
+  "quizbuilder_version": "1.0",
+  "test": {
+    "title": "World Geography (Internal format)",
+    "description": "The same content as simple_format_quiz.json, but in the canonical Internal format that QuizBuilder exports: Tiptap rich-text documents, options as {id, content_json}, and id-based correct answers.",
+    "mode": "async",
+    "access": "open",
+    "show_score": "at_end",
+    "show_correct_answers": "at_end",
+    "multiple_select_scoring": "partial",
+    "blocks": [
+      {
+        "title": "Capitals",
+        "order": 0,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_choice",
+            "prompt_json": {"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "What is the capital of France?"}]}]},
+            "options_json": [
+              {"id": "a", "content_json": {"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "London"}]}]}},
+              {"id": "b", "content_json": {"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Paris"}]}]}},
+              {"id": "c", "content_json": {"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Berlin"}]}]}}
+            ],
+            "correct_answer": "b",
+            "points": 1
+          },
+          {
+            "type": "true_false",
+            "prompt_json": {"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Canberra is the capital of Australia."}]}]},
+            "options_json": [
+              {"id": "true", "content_json": {"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "True"}]}]}},
+              {"id": "false", "content_json": {"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "False"}]}]}}
+            ],
+            "correct_answer": "true",
+            "points": 1
+          }
+        ]
+      },
+      {
+        "title": "Continents & rivers",
+        "order": 1,
+        "context_json": null,
+        "questions": [
+          {
+            "type": "multiple_select",
+            "prompt_json": {"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Which of these countries are in South America?"}]}]},
+            "options_json": [
+              {"id": "a", "content_json": {"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Brazil"}]}]}},
+              {"id": "b", "content_json": {"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Spain"}]}]}},
+              {"id": "c", "content_json": {"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Peru"}]}]}},
+              {"id": "d", "content_json": {"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Egypt"}]}]}}
+            ],
+            "correct_answer": ["a", "c"],
+            "points": 2
+          },
+          {
+            "type": "short_text",
+            "prompt_json": {"type": "doc", "content": [{"type": "paragraph", "content": [{"type": "text", "text": "Name the longest river in Africa."}]}]},
+            "options_json": null,
+            "correct_answer": {"text": "Nile"},
+            "points": 1
+          }
+        ]
+      }
+    ]
+  }
+}

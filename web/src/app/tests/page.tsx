@@ -195,6 +195,133 @@ function QrModal({ url, title, subtitle, onClose }: { url: string; title: string
   );
 }
 
+// ── Access Codes Modal ──────────────────────────────────────────────────────────
+
+type AccessCode = {
+  id: string; code: string; max_uses: number | null;
+  use_count: number; remaining: number | null; revoked: boolean; created_at: string;
+};
+
+function AccessCodesModal({ test, onClose }: { test: Test; onClose: () => void }) {
+  const toast = useToast();
+  const [codes, setCodes] = useState<AccessCode[] | null>(null);
+  const [count, setCount] = useState(1);
+  const [maxUses, setMaxUses] = useState("1");
+  const [prefix, setPrefix] = useState("");
+  const [generating, setGenerating] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  async function load() {
+    try { setCodes((await api.get(`/tests/${test.id}/access-codes`)).data); }
+    catch { toast("Could not load access codes", "error"); }
+  }
+  useEffect(() => { load(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function generate() {
+    setGenerating(true);
+    try {
+      const body = {
+        count,
+        prefix: prefix.trim() || null,
+        max_uses: maxUses.trim() === "" ? null : Math.max(1, parseInt(maxUses, 10) || 1),
+      };
+      await api.post(`/tests/${test.id}/access-codes`, body);
+      toast(`Generated ${count} code${count === 1 ? "" : "s"}`);
+      await load();
+    } catch (e: any) {
+      toast(e?.response?.data?.detail ?? "Generation failed", "error");
+    } finally { setGenerating(false); }
+  }
+
+  async function revoke(id: string) {
+    try { await api.delete(`/tests/${test.id}/access-codes/${id}`); await load(); }
+    catch (e: any) { toast(e?.response?.data?.detail ?? "Revoke failed", "error"); }
+  }
+
+  function copyAll() {
+    const active = (codes ?? []).filter((c) => !c.revoked).map((c) => c.code).join("\n");
+    if (!active) return;
+    navigator.clipboard.writeText(active);
+    setCopied(true); setTimeout(() => setCopied(false), 2000);
+  }
+
+  const activeCount = (codes ?? []).filter((c) => !c.revoked).length;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[85vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-5 border-b border-gray-100">
+          <div>
+            <h2 className="text-lg font-bold text-gray-900">Access codes</h2>
+            <p className="text-xs text-gray-400">{test.title}</p>
+          </div>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100"><XIcon /></button>
+        </div>
+
+        {/* Generator */}
+        <div className="p-5 border-b border-gray-100 space-y-3">
+          <div className="flex gap-3 flex-wrap items-end">
+            <label className="text-xs text-gray-500">
+              How many
+              <input type="number" min={1} max={500} value={count}
+                onChange={(e) => setCount(Math.max(1, Math.min(500, parseInt(e.target.value, 10) || 1)))}
+                className="input w-24 mt-1 block" />
+            </label>
+            <label className="text-xs text-gray-500">
+              Uses per code
+              <input type="number" min={1} value={maxUses} placeholder="∞"
+                onChange={(e) => setMaxUses(e.target.value)}
+                className="input w-28 mt-1 block" />
+            </label>
+            <label className="text-xs text-gray-500">
+              Prefix (optional)
+              <input type="text" value={prefix} maxLength={16}
+                onChange={(e) => setPrefix(e.target.value)}
+                placeholder="CLASS-" className="input w-32 mt-1 block uppercase" />
+            </label>
+          </div>
+          <p className="text-xs text-gray-400">Leave “Uses per code” blank for unlimited.</p>
+          <button onClick={generate} disabled={generating} className="btn-primary">
+            {generating ? "Generating…" : "Generate codes"}
+          </button>
+        </div>
+
+        {/* List */}
+        <div className="flex-1 overflow-y-auto p-5 space-y-2">
+          {codes === null ? (
+            <p className="text-sm text-gray-400">Loading…</p>
+          ) : codes.length === 0 ? (
+            <p className="text-sm text-gray-400">No codes yet. Generate some above.</p>
+          ) : (
+            <>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-gray-400">{activeCount} active · {codes.length} total</span>
+                <button onClick={copyAll}
+                  className={`text-xs px-3 py-1 rounded-lg font-medium transition ${copied ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
+                  {copied ? "✓ Copied!" : "Copy active codes"}
+                </button>
+              </div>
+              {codes.map((c) => (
+                <div key={c.id} className={`flex items-center justify-between rounded-lg border px-3 py-2 ${c.revoked ? "border-gray-100 bg-gray-50 opacity-60" : "border-gray-200"}`}>
+                  <span className={`font-mono text-sm tracking-widest ${c.revoked ? "line-through text-gray-400" : "text-gray-800 select-all"}`}>{c.code}</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-gray-400">
+                      {c.max_uses === null ? `${c.use_count} uses` : `${c.use_count}/${c.max_uses} used`}
+                    </span>
+                    {c.revoked
+                      ? <span className="text-xs text-gray-400">revoked</span>
+                      : <button onClick={() => revoke(c.id)} className="text-xs text-red-600 hover:underline">Revoke</button>}
+                  </div>
+                </div>
+              ))}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Share Panel ───────────────────────────────────────────────────────────────
 
 const LS_BASE_URL_KEY = "qb_base_url";
@@ -295,6 +422,7 @@ export default function TestsPage() {
   const [practiceQrId, setPracticeQrId] = useState<string | null>(null);
   const [cloningId, setCloningId] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<Test | null>(null);
+  const [codesTest, setCodesTest] = useState<Test | null>(null);
   const [launchingLive, setLaunchingLive] = useState<string | null>(null);
   const [baseUrl, setBaseUrl] = useState("");
   useEffect(() => { setBaseUrl(localStorage.getItem("qb_base_url") || window.location.origin); }, []);
@@ -510,6 +638,7 @@ export default function TestsPage() {
                         disabled={launchingLive === t.id}
                       />
                       <MenuItem href={`/results?test_id=${t.id}`} label="Results" />
+                      {t.access === "code" && <MenuItem onClick={() => setCodesTest(t)} label="🔑 Access codes" />}
                       <MenuItem onClick={() => handleClone(t.id)} label={cloningId === t.id ? "Cloning…" : "Clone"} disabled={cloningId === t.id} />
                       {t.practice_enabled && (
                         <MenuItem onClick={() => setPracticeQrId(t.id)} label="📱 Practice QR" />
@@ -532,6 +661,8 @@ export default function TestsPage() {
       )}
 
       {previewId && <PreviewModal testId={previewId} onClose={() => setPreviewId(null)} />}
+
+      {codesTest && <AccessCodesModal test={codesTest} onClose={() => setCodesTest(null)} />}
 
       {practiceQrId && (
         <QrModal

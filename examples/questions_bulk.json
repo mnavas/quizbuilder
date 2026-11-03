@@ -1,0 +1,28 @@
+{
+  "quizbuilder_version": "1.0",
+  "questions": [
+    {
+      "type": "multiple_choice",
+      "prompt": "Which planet is known as the Red Planet?",
+      "options": ["Venus", "Mars", "Jupiter"],
+      "correct_answer": "Mars",
+      "points": 1,
+      "tags": ["science", "astronomy"]
+    },
+    {
+      "type": "multiple_select",
+      "prompt": "Which of these are noble gases?",
+      "options": ["Helium", "Oxygen", "Neon", "Nitrogen"],
+      "correct_answer": ["Helium", "Neon"],
+      "points": 2,
+      "tags": ["science", "chemistry"]
+    },
+    {
+      "type": "short_text",
+      "prompt": "What gas do plants absorb from the atmosphere for photosynthesis?",
+      "correct_answer": "carbon dioxide",
+      "points": 1,
+      "tags": ["science", "biology"]
+    }
+  ]
+}

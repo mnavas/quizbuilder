@@ -55,9 +55,9 @@ QuizBuilder is a self-hosted, multi-tenant online assessment platform. Admins bu
 | `admin` | Full access — manage users, tests, questions, results |
 | `manager` | Create/edit tests and questions; view results |
 | `reviewer` | View and grade open answers |
-| `candidate` | Reserved for future registered taker accounts |
+| `candidate` | Registered taker — can log in and take `registered`-access tests; no admin capabilities |
 
-Takers (people who take tests) are **not** user accounts. They are identified only by an optional email on the Session.
+Takers on `open` and `code` tests are **not** user accounts — they are identified only by an optional email (and an access code) on the Session. Only `registered`-access tests require a logged-in `candidate` account.
 
 ---
 
@@ -66,8 +66,12 @@ Takers (people who take tests) are **not** user accounts. They are identified on
 | File | Contents |
 |---|---|
 | [getting-started.md](getting-started.md) | Installation, environment variables, first run |
+| [requirements.md](requirements.md) | Original product requirements (v0.1 — see status notes within) |
 | [data-model.md](data-model.md) | Database models and relationships |
-| [question-types.md](question-types.md) | All question types and encoding conventions |
+| [question-types.md](question-types.md) | All question types, encoding, and the Simple vs Internal formats |
 | [scoring.md](scoring.md) | Scoring engine, review flow, result disclosure |
-| [api-reference.md](api-reference.md) | All API endpoints |
+| [live-game.md](live-game.md) | Real-time competitive game mode |
+| [api-reference.md](api-reference.md) | All HTTP API endpoints |
 | [deployment.md](deployment.md) | Production setup, nginx, volumes |
+
+Mobile practice app docs live under [`../mobile/docs/`](../mobile/docs/): `architecture.md`, `build.md`, `bundle-format.md`.
